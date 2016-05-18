@@ -5,7 +5,9 @@
   "main": "dist/NgGrid.js",
   "typings": "dist/NgGrid.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "bower install && gulp build",
+    "start": "concurrently \"http-server dist -p 9090 -o\" \"gulp watch\""
   },
   "repository": {
     "type": "git",
@@ -27,7 +29,8 @@
     "pocmanu (https://github.com/pocmanu)",
     "Chris Morabito (https://github.com/morabitowoolpert)",
     "Carlos Esteban Lopez Jaramillo (https://github.com/Luchillo)",
-    "Niklas Berg (https://github.com/nkholski)"
+    "Niklas Berg (https://github.com/nkholski)",
+    "Tudor Gergely (https://github.com/tudorgergely)"
   ],
   "license": "MIT",
   "bugs": {
@@ -45,6 +48,7 @@
     "@angular/common": "^2.0.0-rc.0",
     "@angular/core": "^2.0.0-rc.0",
     "@angular/platform-browser-dynamic": "^2.0.0-rc.0",
+    "concurrently": "^2.1.0",
     "del": "^1.2.1",
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.35.0",
@@ -54,6 +58,7 @@
     "gulp-symlink": "^2.1.4",
     "gulp-typescript": "^2.9.2",
     "gulp-uglify": "^1.5.1",
+    "http-server": "^0.9.0",
     "jasmine": "^2.3.2",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.10",

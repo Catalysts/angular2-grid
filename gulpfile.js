@@ -22,11 +22,11 @@ var tsProject = typescript.createProject({
 
 var PATHS = {
 	src: {
-		ts: ['!src/*.d.ts', 'src/*.ts'],
+		ts: ['!src/**/*.d.ts', 'src/**/*.ts'],
 		html: 'src/*.html',
 		css: 'src/*.css',
 		test: 'test/*.ts',
-		typings: 'src/*.d.ts'
+		typings: 'src/**/*.d.ts'
 	},
 	typings: [
 		'typings/browser.d.ts',
