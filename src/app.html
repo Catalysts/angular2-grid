@@ -1,8 +1,9 @@
-<div [ngGrid]="gridConfig">
+<div [ngGrid]="gridConfig"
+     (itemDroppedIn)="addItem($event)">
     <div [ngGridItem]="item.config"
-         (itemChange)="updateItem(i, $event)" (resize)="onResize(i, $event)" (drag)="onDrag(i, $event)"
          *ngFor="let item of items">
-        <div class="handle"></div>
         {{item.text}}
     </div>
 </div>
+
+<div [ngGridDraggable]="'test'" style="width: 100px; height: 100px; background-color: red;"></div>

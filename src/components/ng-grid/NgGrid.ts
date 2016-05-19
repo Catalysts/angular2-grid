@@ -32,7 +32,9 @@ import {NgGridItemEvent} from '../ng-grid-item/NgGridItemEvent';
         '(touchend)': '_onMouseUp($event)',
         '(window:resize)': '_onResize($event)',
         '(document:mousemove)': '_onMouseMove($event)',
-        '(document:mouseup)': '_onMouseUp($event)'
+        '(document:mouseup)': '_onMouseUp($event)',
+        '(dragover)': 'onDragOver($event)',
+        '(drop)': 'onDrop($event)',
     }
 })
 export class NgGrid implements OnInit, DoCheck, OnDestroy {
@@ -44,6 +46,7 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
     @Output() public onResize:EventEmitter<NgGridItem> = new EventEmitter<NgGridItem>();
     @Output() public onResizeStop:EventEmitter<NgGridItem> = new EventEmitter<NgGridItem>();
     @Output() public onItemChange:EventEmitter<Array<NgGridItemEvent>> = new EventEmitter<Array<NgGridItemEvent>>();
+    @Output() public itemDroppedIn: EventEmitter<any> = new EventEmitter<any>();
 
     //	Public variables
     public colWidth:number = 250;
@@ -1069,5 +1072,27 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
             placeholder.setGridPosition(pos.col, pos.row);
             placeholder.setSize(dims.x, dims.y);
         });
+    }
+
+    private onDragOver(e: any) {
+        e.preventDefault();
+    }
+
+    private onDrop(e: any) {
+        const data: any = e.dataTransfer.getData('content');
+        const gridPos = {
+            row: this.getGridBottomRow(),
+            col: 0,
+        };
+        this.itemDroppedIn.emit({
+            data,
+            gridPos,
+        });
+    }
+
+    private getGridBottomRow() {
+        return this._items
+            .map(item => item._row + item._sizey)
+            .reduce((a, b) => Math.max(a, b), 0);
     }
 }

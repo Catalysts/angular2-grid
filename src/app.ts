@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation, enableProdMode } from '@angular/core';
 import { CORE_DIRECTIVES, FORM_DIRECTIVES } from '@angular/common';
 import { bootstrap } from '@angular/platform-browser-dynamic';
-import { NgGrid, NgGridConfig, NgGridItem, GridPositionService, NgGridItemConfig } from './NgGrid';
+import { NgGrid, NgGridConfig, NgGridItem, GridPositionService, NgGridItemConfig, NgGridDraggable } from './NgGrid';
 
 export interface ItemWithText {
     text: string,
@@ -14,7 +14,7 @@ export interface ItemWithText {
 	templateUrl: 'app.html',
 	styleUrls: ['app.css', 'NgGrid.css', 'NgGrid_FixSmall.css'],
     providers: [GridPositionService],
-	directives: [CORE_DIRECTIVES, NgGrid, NgGridItem, FORM_DIRECTIVES],
+	directives: [CORE_DIRECTIVES, NgGrid, NgGridItem, FORM_DIRECTIVES, NgGridDraggable],
 	encapsulation: ViewEncapsulation.None
 })
 // Component controller
@@ -38,8 +38,9 @@ class MyAppComponent {
 		'auto_style': true,
 		'auto_resize': false,
 		'maintain_ratio': false,
-		'prefer_new': false
+		'prefer_new': true,
 	};
+
     private items: ItemWithText[] = [
         {
             text: '8x3',
@@ -111,6 +112,19 @@ class MyAppComponent {
 
     private validatePosition(gridCol: number, gridRow: number): boolean {
         return gridCol % 8 == 1;
+    }
+
+    private addItem(e: any) {
+        console.log(e);
+        this.items.push({
+            text: e.data,
+            config: {
+                col: e.gridPos.col,
+                row: e.gridPos.row,
+                sizex: 8,
+                sizey: 2,
+            },
+        })
     }
 }
 
