@@ -1,4 +1,5 @@
 export interface NgGridItemConfig {
+    id?: string;
     col?: number;
     row?: number;
     sizex?: number;
@@ -9,4 +10,5 @@ export interface NgGridItemConfig {
     draggable?: boolean;
     resizable?: boolean;
     borderSize?: number;
+    component?: any;
 }

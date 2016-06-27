@@ -1,132 +1,147 @@
-import { Component, ViewEncapsulation, enableProdMode } from '@angular/core';
-import { CORE_DIRECTIVES, FORM_DIRECTIVES } from '@angular/common';
-import { bootstrap } from '@angular/platform-browser-dynamic';
-import { NgGrid, NgGridConfig, NgGridItem, GridPositionService, NgGridItemConfig, NgGridDraggable } from './NgGrid';
+import {Component, ViewEncapsulation, enableProdMode, provide, ViewChild, OnInit} from '@angular/core';
+import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {
+    NgGrid,
+    NgGridConfig,
+    NgGridComponent,
+    NgGridItem,
+    GridPositionService,
+    NgGridItemConfig,
+    NgGridDraggable,
+    GridDragService,
+} from './NgGrid';
 
-export interface ItemWithText {
-    text: string,
-    config: NgGridItemConfig,
-}
+import {TestComponent} from './TestComponent';
+import {NgGridWrapper} from "./NgGridWrapper";
 
-// Annotation section
 @Component({
-	selector: 'my-app',
-	templateUrl: 'app.html',
-	styleUrls: ['app.css', 'NgGrid.css', 'NgGrid_FixSmall.css'],
-    providers: [GridPositionService],
-	directives: [CORE_DIRECTIVES, NgGrid, NgGridItem, FORM_DIRECTIVES, NgGridDraggable],
-	encapsulation: ViewEncapsulation.None
+    selector: 'my-app',
+    templateUrl: 'app.html',
+    styleUrls: ['app.css', 'NgGrid.css', 'NgGrid_FixSmall.css'],
+    providers: [GridPositionService, GridDragService],
+    directives: [CORE_DIRECTIVES, NgGrid, NgGridItem, FORM_DIRECTIVES, NgGridDraggable, NgGridComponent, TestComponent],
+    encapsulation: ViewEncapsulation.None
 })
-// Component controller
-class MyAppComponent {
-	private gridConfig = <NgGridConfig>{
-		'margins': [5],
-		'draggable': true,
-		'resizable': false,
-		'max_cols': 16,
-		'max_rows': 30,
-		'visible_cols': 0,
-		'visible_rows': 0,
-		'min_cols': 1,
-		'min_rows': 1,
-		'col_width': 50,
-		'row_height': 50,
-		'cascade': 'off',
-		'min_width': 50,
-		'min_height': 50,
-		'fix_to_grid': false,
-		'auto_style': true,
-		'auto_resize': false,
-		'maintain_ratio': false,
-		'prefer_new': true,
-	};
+class MyAppComponent extends OnInit {
+    @ViewChild('grid1')
+    private ngGrid1:NgGrid;
+    @ViewChild('grid2')
+    private ngGrid2:NgGrid;
 
-    private items: ItemWithText[] = [
+    private gridConfig = <NgGridConfig>{
+        'margins': [5],
+        'draggable': true,
+        'resizable': false,
+        'maxCols': 16,
+        'maxRows': 30,
+        'visibleCols': 0,
+        'visibleRows': 0,
+        'minCols': 1,
+        'minRows': 1,
+        'colWidth': 50,
+        'rowHeight': 50,
+        'cascade': 'off',
+        'minWidth': 50,
+        'minHeight': 50,
+        'fixToGrid': false,
+        'autoStyle': true,
+        'autoResize': false,
+        'maintainRatio': false,
+        'preferNew': true,
+    };
+    private items:NgGridItemConfig[] = [
         {
-            text: '8x3',
-            config: {
-                col: 0,
-                row: 0,
-                sizex: 8,
-                sizey: 3,
-            },
+            col: 1,
+            row: 1,
+            sizex: 8,
+            sizey: 3,
+            component: TestComponent,
         },
         {
-            text: '8x3',
-            config: {
-                col: 9,
-                row: 0,
-                sizex: 8,
-                sizey: 3,
-            },
+            col: 9,
+            row: 1,
+            sizex: 8,
+            sizey: 3,
+            component: TestComponent,
         },
         {
-            text: '16x2 fixed',
-            config: {
-                col: 0,
-                row: 4,
-                sizex: 16,
-                sizey: 2,
-                fixed: true,
-                draggable: false,
-            },
+            col: 1,
+            row: 4,
+            sizex: 16,
+            sizey: 2,
+            draggable: false,
+            component: TestComponent,
         },
         {
-            text: '8x3 fixed',
-            config: {
-                col: 0,
-                row: 6,
-                sizex: 8,
-                sizey: 3,
-                fixed: true,
-                draggable: false,
-            },
+            col: 1,
+            row: 6,
+            sizex: 8,
+            sizey: 3,
+            draggable: false,
+            component: TestComponent,
         },
         {
-            text: '8x6',
-            config: {
-                col: 9,
-                row: 6,
-                sizex: 8,
-                sizey: 6,
-            },
+            col: 9,
+            row: 6,
+            sizex: 8,
+            sizey: 6,
+            component: TestComponent,
         },
         {
-            text: '16x2',
-            config: {
-                col: 0,
-                row: 12,
-                sizex: 16,
-                sizey: 2,
-            },
+            col: 1,
+            row: 12,
+            sizex: 16,
+            sizey: 2,
+            component: TestComponent,
         },
     ];
-	
-	constructor(private gridPositionService: GridPositionService) {
-        this.gridPositionService.addCondition(this.validatePosition);
-	}
-	
-	private _generateDefaultItemConfig(): any {
-		return { 'dragHandle': '.handle', 'col': 0, 'row': 0, 'sizex': 1, 'sizey': 1 };
-	}
+    private items2:NgGridItemConfig[] = [
+        {
+            col: 1,
+            row: 1,
+            sizex: 8,
+            sizey: 3,
+            component: TestComponent,
+        }, {
+            col: 1,
+            row: 4,
+            sizex: 8,
+            sizey: 3,
+            component: TestComponent,
+        }, {
+            col: 9,
+            row: 1,
+            sizex: 8,
+            sizey: 3,
+            component: TestComponent,
+        }, {
+            col: 1,
+            row: 6,
+            sizex: 8,
+            sizey: 3,
+            component: TestComponent,
+        },
+    ];
+    private draggable:NgGridItemConfig = {
+        col: 9,
+        row: 9,
+        sizex: 8,
+        sizey: 3,
+        component: NgGridWrapper
+    };
 
-    private validatePosition(gridCol: number, gridRow: number): boolean {
-        return gridCol % 8 == 1;
+    constructor(private gridPositionService:GridPositionService, private gridDragService:GridDragService) {
+        this.gridPositionService.addCondition(this.validatePosition);
     }
 
-    private addItem(e: any) {
-        console.log(e);
-        this.items.push({
-            text: e.data,
-            config: {
-                col: e.gridPos.col,
-                row: e.gridPos.row,
-                sizex: 8,
-                sizey: 2,
-            },
-        })
+    ngOnInit() {
+    }
+
+    private validatePosition(gridCol:number, gridRow:number):boolean {
+        return gridCol % 8 == 1;
     }
 }
 
 enableProdMode();
-bootstrap(MyAppComponent);
+bootstrap(MyAppComponent, [provide(Window, {useValue: window})]);

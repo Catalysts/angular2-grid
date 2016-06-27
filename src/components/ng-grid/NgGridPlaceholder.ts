@@ -7,22 +7,23 @@ import {
 
 import {NgGrid} from './NgGrid';
 import {GridPositionService} from '../../service/GridPositionService';
+import {NgGridItem} from "../ng-grid-item/NgGridItem";
 
 @Component({
-    selector: 'div',
-    template: ""
+    selector: 'ngGridPlaceholder',
+    template: `<div [style.display]="hidden"></div>`
 })
 export class NgGridPlaceholder implements OnInit {
+    private hidden:boolean = true;
     private _sizex:number;
     private _sizey:number;
     private _col:number;
     private _row:number;
     private _ngGrid:NgGrid;
 
-    constructor(
-        private _ngEl:ElementRef,
-        private _renderer:Renderer,
-        private gridPositionService:GridPositionService) {
+    constructor(private _ngEl:ElementRef,
+                private _renderer:Renderer,
+                private gridPositionService:GridPositionService) {
     }
 
     public registerGrid(ngGrid:NgGrid) {
@@ -40,8 +41,8 @@ export class NgGridPlaceholder implements OnInit {
         this._recalculateDimensions();
     }
 
-    public setGridPosition(col:number, row:number):void {
-        if (!this.gridPositionService.validateGridPosition(col, row)) {
+    public setGridPosition(col:number, row:number, item:NgGridItem):void {
+        if (!this.gridPositionService.validateGridPosition(col, row, item)) {
             this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', true);
             this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', false);
         } else {
@@ -58,22 +59,27 @@ export class NgGridPlaceholder implements OnInit {
             case 'up':
             case 'left':
             default:
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'transform', 'translate(' + x + 'px, ' + y + 'px)');
                 this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', x + "px");
                 this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', y + "px");
                 this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', null);
                 this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', null);
                 break;
             case 'right':
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', x + "px");
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', y + "px");
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', null);
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', null);
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'transform', 'translate(' + -x + 'px, ' + y + 'px)');
+                //
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', x + "px");
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', y + "px");
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', null);
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', null);
                 break;
             case 'down':
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', x + "px");
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', y + "px");
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', null);
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', null);
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'transform', 'translate(' + x + 'px, ' + -y + 'px)');
+
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', x + "px");
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', y + "px");
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', null);
+                // this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', null);
                 break;
         }
     }
@@ -94,5 +100,9 @@ export class NgGridPlaceholder implements OnInit {
         var w = (this._ngGrid.colWidth * this._sizex) + ((this._ngGrid.marginLeft + this._ngGrid.marginRight) * (this._sizex - 1));
         var h = (this._ngGrid.rowHeight * this._sizey) + ((this._ngGrid.marginTop + this._ngGrid.marginBottom) * (this._sizey - 1));
         this._setDimensions(w, h);
+    }
+
+    public hide():void {
+        this.hidden = true;
     }
 }

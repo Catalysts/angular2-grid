@@ -10,15 +10,21 @@ import {
     ViewContainerRef,
     Output
 } from '@angular/core';
+import {GridDragService} from '../../service/GridDragService';
 import {GridPositionService} from '../../service/GridPositionService';
 import {NgGridItemEvent} from './NgGridItemEvent';
 import {NgGridItemConfig} from './NgGridItemConfig';
 import {NgGrid} from '../ng-grid/NgGrid';
+import {UUID} from 'angular2-uuid';
 
 @Directive({
     selector: '[ngGridItem]',
     inputs: ['config: ngGridItem'],
-    // providers: [GridPositionService],
+    host: {
+        // '(mousedown)': '_onMouseDown($event)',
+        // '(document:mousemove)': '_onMouseMoveWindow($event)',
+        // '(document:mouseup)': '_onMouseUp($event)',
+    }
 })
 export class NgGridItem implements OnInit, OnDestroy {
     //	Event Emitters
@@ -39,16 +45,15 @@ export class NgGridItem implements OnInit, OnDestroy {
 
     //	Default config
     private static CONST_DEFAULT_CONFIG:NgGridItemConfig = {
+        id: UUID.UUID(),
         col: 1,
         row: 1,
         sizex: 1,
         sizey: 1,
-        dragHandle: null,
-        resizeHandle: null,
         fixed: false,
         draggable: true,
         resizable: true,
-        borderSize: 15
+        borderSize: 15,
     };
 
     public isFixed:boolean = false;
@@ -56,11 +61,12 @@ export class NgGridItem implements OnInit, OnDestroy {
     public isResizable:boolean = true;
 
     //	Private variables
+    public id: string = UUID.UUID();
     private _col:number = 1;
     private _row:number = 1;
     private _sizex:number = 1;
     private _sizey:number = 1;
-    private _config = NgGridItem.CONST_DEFAULT_CONFIG;
+    private _config:NgGridItemConfig = NgGridItem.CONST_DEFAULT_CONFIG;
     private _dragHandle:string;
     private _resizeHandle:string;
     private _borderSize:number;
@@ -71,13 +77,17 @@ export class NgGridItem implements OnInit, OnDestroy {
     private _added:boolean = false;
     private _differ:KeyValueDiffer;
 
-    //	[ng-grid-item] handler
-    set config(v:NgGridItemConfig) {
-        var defaults = NgGridItem.CONST_DEFAULT_CONFIG;
+    constructor(private _differs:KeyValueDiffers,
+                private _ngEl:ElementRef,
+                private _renderer:Renderer,
+                public _ngGrid:NgGrid,
+                private gridPositionService:GridPositionService,
+                private gridDragService:GridDragService,
+                public containerRef:ViewContainerRef) {
+    }
 
-        for (var x in defaults)
-            if (v[x] == null)
-                v[x] = defaults[x];
+    set config(v:NgGridItemConfig) {
+        v = Object.assign(Object.assign({}, NgGridItem.CONST_DEFAULT_CONFIG), v);
 
         this.setConfig(v);
 
@@ -94,78 +104,24 @@ export class NgGridItem implements OnInit, OnDestroy {
         this._recalculatePosition();
     }
 
-    //	Constructor
-    constructor(private _differs:KeyValueDiffers,
-                private _ngEl:ElementRef,
-                private _renderer:Renderer,
-                private _ngGrid:NgGrid,
-                private gridPositionService:GridPositionService,
-                public containerRef:ViewContainerRef) {
+    get config():NgGridItemConfig {
+        return this._config;
     }
 
-    public onResizeStartEvent():void {
-        var event = this.getEventOutput();
-        this.onResizeStart.emit(event);
-        this.onResizeAny.emit(event);
-        this.onChangeStart.emit(event);
-        this.onChangeAny.emit(event);
-    }
+    // private _onMouseDown(event:any) {
+    //     // if (this.canDrag(event)) {
+    //     //     this.gridDragService.dragStart(this, this._ngGrid, event);
+    //     //     // this._ngEl.nativeElement.style['pointer-events'] = 'none';
+    //     // }
+    // }
 
-    public onResizeEvent():void {
-        var event = this.getEventOutput();
-        this.onResize.emit(event);
-        this.onResizeAny.emit(event);
-        this.onChange.emit(event);
-        this.onChangeAny.emit(event);
-    }
-
-    public onResizeStopEvent():void {
-        var event = this.getEventOutput();
-        this.onResizeStop.emit(event);
-        this.onResizeAny.emit(event);
-        this.onChangeStop.emit(event);
-        this.onChangeAny.emit(event);
-
-        this._config.sizex = this._sizex;
-        this._config.sizey = this._sizey;
-        this.ngGridItemChange.emit(this._config);
-    }
-
-    public onDragStartEvent():void {
-        var event = this.getEventOutput();
-        this.onDragStart.emit(event);
-        this.onDragAny.emit(event);
-        this.onChangeStart.emit(event);
-        this.onChangeAny.emit(event);
-    }
-
-    public onDragEvent():void {
-        var event = this.getEventOutput();
-        this.onDrag.emit(event);
-        this.onDragAny.emit(event);
-        this.onChange.emit(event);
-        this.onChangeAny.emit(event);
-    }
-
-    public onDragStopEvent():void {
-        var event = this.getEventOutput();
-        this.onDragStop.emit(event);
-        this.onDragAny.emit(event);
-        this.onChangeStop.emit(event);
-        this.onChangeAny.emit(event);
-
-        this._config.col = this._col;
-        this._config.row = this._row;
-        this.ngGridItemChange.emit(this._config);
-    }
-
-    public onCascadeEvent():void {
-        this._config.sizex = this._sizex;
-        this._config.sizey = this._sizey;
-        this._config.col = this._col;
-        this._config.row = this._row;
-        this.ngGridItemChange.emit(this._config);
-    }
+    // private _onMouseMoveWindow(event) {
+    //     // // this.gridDragService.mouseMove(event);
+    //     // if (this.gridDragService.draggedItem == this) {
+    //     //     // const diff = this.gridDragService.getPositionDiff(event);
+    //     //     // this._ngEl.nativeElement.style.transform = `translate(${diff.x}px, ${diff.y}px)`;
+    //     // }
+    // }
 
     public ngOnInit():void {
         this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-item', true);
@@ -177,6 +133,16 @@ export class NgGridItem implements OnInit, OnDestroy {
             this._added = true;
             this._ngGrid.addItem(this);
         }
+    }
+
+    public ngOnDestroy():void {
+        if (this._added) this._ngGrid.removeItem(this);
+    }
+
+    private _onMouseUp(event) {
+        // this.gridDragService.mouseUp(event);
+        this._ngEl.nativeElement.style.transform = `translate(0, 0)`;
+        this._ngEl.nativeElement.style['pointer-events'] = 'auto';
     }
 
     //	Public methods
@@ -242,10 +208,6 @@ export class NgGridItem implements OnInit, OnDestroy {
         }
     }
 
-    public ngOnDestroy():void {
-        if (this._added) this._ngGrid.removeItem(this);
-    }
-
     //	Getters
     public getElement():ElementRef {
         return this._ngEl;
@@ -279,23 +241,22 @@ export class NgGridItem implements OnInit, OnDestroy {
     public setConfig(config:NgGridItemConfig):void {
         this._config = config;
 
-        this._col = config.col ? config.col : NgGridItem.CONST_DEFAULT_CONFIG.col;
-        this._row = config.row ? config.row : NgGridItem.CONST_DEFAULT_CONFIG.row;
-        this._sizex = config.sizex ? config.sizex : NgGridItem.CONST_DEFAULT_CONFIG.sizex;
-        this._sizey = config.sizey ? config.sizey : NgGridItem.CONST_DEFAULT_CONFIG.sizey;
+        this._col = config.col || NgGridItem.CONST_DEFAULT_CONFIG.col;
+        this._row = config.row || NgGridItem.CONST_DEFAULT_CONFIG.row;
+        this._sizex = config.sizex || NgGridItem.CONST_DEFAULT_CONFIG.sizex;
+        this._sizey = config.sizey || NgGridItem.CONST_DEFAULT_CONFIG.sizey;
         this._dragHandle = config.dragHandle;
         this._resizeHandle = config.resizeHandle;
         this._borderSize = config.borderSize;
-        this.isDraggable = config.draggable ? true : false;
-        this.isResizable = config.resizable ? true : false;
-        this.isFixed = config.fixed ? true : false;
+        this.isDraggable = !!config.draggable;
+        this.isResizable = !!config.resizable;
+        this.isFixed = !!config.fixed;
 
         if (this._added) {
             this._ngGrid.updateItem(this);
         }
 
-        this._recalculatePosition();
-        this._recalculateDimensions();
+        this.recalculateSelf();
     }
 
     public ngDoCheck():boolean {
@@ -321,7 +282,7 @@ export class NgGridItem implements OnInit, OnDestroy {
     }
 
     public setGridPosition(col:number, row:number, update:boolean = true):boolean {
-        const isPositionValid = this.gridPositionService.validateGridPosition(col, row);
+        const isPositionValid = this.gridPositionService.validateGridPosition(col, row, this);
 
         if (isPositionValid) {
             this._col = col;
@@ -336,7 +297,7 @@ export class NgGridItem implements OnInit, OnDestroy {
     }
 
     public getEventOutput():NgGridItemEvent {
-        return <NgGridItemEvent>{
+        return {
             col: this._col,
             row: this._row,
             sizex: this._sizex,
@@ -385,12 +346,14 @@ export class NgGridItem implements OnInit, OnDestroy {
     public startMoving():void {
         this._renderer.setElementClass(this._ngEl.nativeElement, 'moving', true);
         var style = window.getComputedStyle(this._ngEl.nativeElement);
+        this._ngEl.nativeElement.style['pointer-events'] = 'none';
         if (this._ngGrid.autoStyle) this._renderer.setElementStyle(this._ngEl.nativeElement, 'z-index', (parseInt(style.getPropertyValue('z-index')) + 1).toString());
     }
 
     public stopMoving():void {
         this._renderer.setElementClass(this._ngEl.nativeElement, 'moving', false);
         var style = window.getComputedStyle(this._ngEl.nativeElement);
+        this._ngEl.nativeElement.style['pointer-events'] = 'auto';
         if (this._ngGrid.autoStyle) this._renderer.setElementStyle(this._ngEl.nativeElement, 'z-index', (parseInt(style.getPropertyValue('z-index')) - 1).toString());
     }
 
@@ -446,5 +409,69 @@ export class NgGridItem implements OnInit, OnDestroy {
         });
 
         this.setConfig(this._config);
+    }
+
+    public onResizeStartEvent():void {
+        var event = this.getEventOutput();
+        this.onResizeStart.emit(event);
+        this.onResizeAny.emit(event);
+        this.onChangeStart.emit(event);
+        this.onChangeAny.emit(event);
+    }
+
+    public onResizeEvent():void {
+        var event = this.getEventOutput();
+        this.onResize.emit(event);
+        this.onResizeAny.emit(event);
+        this.onChange.emit(event);
+        this.onChangeAny.emit(event);
+    }
+
+    public onResizeStopEvent():void {
+        var event = this.getEventOutput();
+        this.onResizeStop.emit(event);
+        this.onResizeAny.emit(event);
+        this.onChangeStop.emit(event);
+        this.onChangeAny.emit(event);
+
+        this._config.sizex = this._sizex;
+        this._config.sizey = this._sizey;
+        this.ngGridItemChange.emit(this._config);
+    }
+
+    public onDragStartEvent():void {
+        var event = this.getEventOutput();
+        this.onDragStart.emit(event);
+        this.onDragAny.emit(event);
+        this.onChangeStart.emit(event);
+        this.onChangeAny.emit(event);
+    }
+
+    public onDragEvent():void {
+        var event = this.getEventOutput();
+        this.onDrag.emit(event);
+        this.onDragAny.emit(event);
+        this.onChange.emit(event);
+        this.onChangeAny.emit(event);
+    }
+
+    public onDragStopEvent():void {
+        var event = this.getEventOutput();
+        this.onDragStop.emit(event);
+        this.onDragAny.emit(event);
+        this.onChangeStop.emit(event);
+        this.onChangeAny.emit(event);
+
+        this._config.col = this._col;
+        this._config.row = this._row;
+        this.ngGridItemChange.emit(this._config);
+    }
+
+    public onCascadeEvent():void {
+        this._config.sizex = this._sizex;
+        this._config.sizey = this._sizey;
+        this._config.col = this._col;
+        this._config.row = this._row;
+        this.ngGridItemChange.emit(this._config);
     }
 }
