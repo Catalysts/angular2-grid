@@ -411,7 +411,7 @@ export class NgGrid implements OnInit, DoCheck {
         this.setConfig(this._config);
     }
 
-    private _onMouseDown(e:any):boolean {
+    private _onMouseDown(e:any) {
         // var mousePos = this._getMousePosition(e);
         // var item = this._getItemFromPosition(mousePos);
         //
@@ -648,7 +648,6 @@ export class NgGrid implements OnInit, DoCheck {
     }
 
     private _calculateGridPosition(left:number, top:number):{ col:number, row:number } {
-        console.log(left, top);
         var col = Math.max(1, Math.round(left / (this.colWidth + this.marginLeft + this.marginRight)) + 1);
         var row = Math.max(1, Math.round(top / (this.rowHeight + this.marginTop + this.marginBottom)) + 1);
 
@@ -971,8 +970,6 @@ export class NgGrid implements OnInit, DoCheck {
         if (((<any>window).TouchEvent && e instanceof TouchEvent) || (e.touches || e.changedTouches)) {
             e = e.touches.length > 0 ? e.touches[0] : e.changedTouches[0];
         }
-        console.log(e);
-
         var refPos = this._ngEl.nativeElement.getBoundingClientRect();
 
         var left = e.clientX - refPos.left;
@@ -981,8 +978,6 @@ export class NgGrid implements OnInit, DoCheck {
         if (this.cascade == "down") top = refPos.top + refPos.height - e.clientY;
         if (this.cascade == "right") left = refPos.left + refPos.width - e.clientX;
 
-        console.log(left, top);
-
         return {
             left,
             top
@@ -990,7 +985,7 @@ export class NgGrid implements OnInit, DoCheck {
     }
 
     private _getItemFromPosition(position:{ left:number, top:number }):NgGridItem {
-        const isPositionInside = (size: {width:number, height:number}, pos: {left:number, top:number}) => {
+        const isPositionInside = (size:{width:number, height:number}, pos:{left:number, top:number}) => {
             return position.left > (pos.left + this.marginLeft) && position.left < (pos.left + this.marginLeft + size.width) &&
                 position.top > (pos.top + this.marginTop) && position.top < (pos.top + this.marginTop + size.height)
         };
@@ -1001,14 +996,19 @@ export class NgGrid implements OnInit, DoCheck {
     public _createPlaceholder(item:NgGridItem) {
         const pos = item.getGridPosition(), dims = item.getSize();
         this.cmpResolver.resolveComponent(NgGridPlaceholder)
-            .then((factory:ComponentFactory) =>
-                item.containerRef.createComponent(factory, item.containerRef.length, item.containerRef.parentInjector))
+            .then((factory:ComponentFactory) => {
+                console.log(item.containerRef);
+                return item.containerRef.createComponent(factory, item.containerRef.length, item.containerRef.parentInjector);
+            })
             .then(componentRef => {
+                // setTimeout(() => {
                 this._placeholderRef = componentRef;
-                const placeholder = this._placeholderRef.instance;
-                placeholder.registerGrid(this);
-                placeholder.setGridPosition(pos.col, pos.row, item);
-                placeholder.setSize(dims.x, dims.y);
+                // const placeholder = this._placeholderRef.instance;
+                this._placeholderRef.instance.registerGrid(this);
+                this._placeholderRef.instance.setGridPosition(pos.col, pos.row, item);
+                this._placeholderRef.instance.setSize(dims.x, dims.y);
+                console.log('creating placeholder', item, this._placeholderRef);
+                // });
             });
     }
 

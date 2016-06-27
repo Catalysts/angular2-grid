@@ -29,7 +29,7 @@ import {NgGridItemConfig} from "../ng-grid-item/NgGridItemConfig";
         NgGrid,
     ],
     template: `
-        <div [ngGrid]="config">
+        <div [ngGrid]="config" style="min-height: 100px; min-width: 100px;">
             <div [ngGridItem]="item"
                  *ngFor="let item of items; let i = index"
                  id="gridItem_{{i}}">
@@ -60,21 +60,31 @@ export class NgGridComponent implements OnInit, OnChanges {
     ngOnInit() {
         const dragSubscriptors = this.gridDragService.addGrid(this);
         dragSubscriptors.inside.subscribe(v => {
-            if (!this.ngGrid._placeholderRef) {
-                this.ngGrid._createPlaceholder(v.itemDragged.item);
-            } else {
-                const {left, top} = this.ngGrid._getMousePosition(v.itemDragged.event.event);
-                const i = this.ngGrid._calculateGridPosition(left, top);
-                this.ngGrid._placeholderRef.instance.setGridPosition(i.col, i.row, v.itemDragged.item);
+            if (this.gridDragService.draggedItem) {
+                setTimeout(() => {
+                    // console.log('inside', this.ngGrid._placeholderRef);
+                    if (!this.ngGrid._placeholderRef) {
+                        this.ngGrid._createPlaceholder(v.itemDragged.item);
+                    } else {
+                        const {left, top} = this.ngGrid._getMousePosition(v.itemDragged.event.event);
+                        const i = this.ngGrid._calculateGridPosition(left, top);
+                        this.ngGrid._placeholderRef.instance.setGridPosition(i.col, i.row, v.itemDragged.item);
+                    }
+                });
             }
         });
         dragSubscriptors.outside.subscribe(v =>null /*console.log('outside', this.items.length)*/);
         dragSubscriptors.release.subscribe(v => {
-            this.addItem(v.release.item.config);
+            const {left, top} = this.ngGrid._getMousePosition(v.move.event);
+            const i = this.ngGrid._calculateGridPosition(left, top);
+            let conf = Object.assign({}, v.release.item.config);
+            conf.col = i.col;
+            conf.row = i.row;
+            this.addItem(conf);
             v.release.item.stopMoving();
             this.ngGrid.refreshGrid();
             this.ngGrid._placeholderRef.destroy();
-            this.ngGrid._placeholderRef = null;
+            this.ngGrid._placeholderRef = undefined;
             this.newItemAdd$.next({
                 grid: this,
                 item: v.release.item,

@@ -32,7 +32,7 @@ export class NgGridPlaceholder implements OnInit {
 
     public ngOnInit():void {
         this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', true);
-        if (this._ngGrid.autoStyle) this._renderer.setElementStyle(this._ngEl.nativeElement, 'position', 'absolute');
+        /*if (this._ngGrid.autoStyle)*/ this._renderer.setElementStyle(this._ngEl.nativeElement, 'position', 'absolute');
     }
 
     public setSize(x:number, y:number):void {
