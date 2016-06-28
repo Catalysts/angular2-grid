@@ -10,7 +10,7 @@ import {
     NgGridItemConfig,
     NgGridDraggable,
     GridDragService,
-} from './NgGrid';
+} from './index';
 
 import {TestComponent} from './TestComponent';
 import {NgGridWrapper} from "./NgGridWrapper";
