@@ -1,6 +1,6 @@
 {
   "name": "angular2-grid-ef",
-  "version": "0.7.2-d341c5b0c43d981f155263454bdc449c1d2f0a78-ef",
+  "version": "0.7.3-d341c5b0c43d981f155263454bdc449c1d2f0a78-ef",
   "description": "A grid-based drag/drop/resize directive plugin for Angular 2",
   "main": "dist/NgGrid.js",
   "typings": "dist/NgGrid.d.ts",
@@ -38,8 +38,8 @@
   },
   "homepage": "https://github.com/BTMorton/angular2-grid",
   "files": [
-    "src/NgGrid.ts",
-    "dist/NgGrid*"
+    "src/**",
+    "dist/**"
   ],
   "peerDependencies": {
     "@angular/core": "2.0.0-rc.2",

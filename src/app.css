@@ -2,6 +2,10 @@
 	border: solid 1px;
 }
 
+ngGrid {
+	border: 1px solid black;
+}
+
 .handle {
 	width: 100%;
 	height: 50px;

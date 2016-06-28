@@ -9,7 +9,7 @@ import {
     OnInit,
     DoCheck,
     ViewContainerRef,
-    Output, ComponentResolver, ComponentFactory
+    Output, ComponentResolver, ComponentFactory, ApplicationRef
 } from '@angular/core';
 
 import {NgGridItem} from '../ng-grid-item/NgGridItem';
@@ -109,7 +109,9 @@ export class NgGrid implements OnInit, DoCheck {
         autoStyle: true,
         autoResize: false,
         maintainRatio: false,
-        preferNew: false
+        preferNew: false,
+        width: 100,
+        height: 100
     };
     private _config = NgGrid.CONST_DEFAULT_CONFIG;
 
@@ -119,7 +121,8 @@ export class NgGrid implements OnInit, DoCheck {
                 private _renderer:Renderer,
                 private cmpResolver:ComponentResolver,
                 private viewContainer:ViewContainerRef,
-                private gridDragService:GridDragService) {
+                private gridDragService:GridDragService,
+                private appRef:ApplicationRef) {
     }
 
     //	[ng-grid] attribute handler
@@ -206,6 +209,11 @@ export class NgGrid implements OnInit, DoCheck {
 
         this._cascadeGrid();
         this._updateSize();
+
+        const width = config.width || NgGrid.CONST_DEFAULT_CONFIG.width;
+        const height = config.height || NgGrid.CONST_DEFAULT_CONFIG.height;
+
+        this.setSize(width, height);
     }
 
     public getItemPosition(index:number):{ col:number, row:number } {
@@ -912,7 +920,13 @@ export class NgGrid implements OnInit, DoCheck {
                     this._itemGrid[y][x] = null;
     }
 
+    private setSize(width: number, height: number) {
+        this._renderer.setElementStyle(this._ngEl.nativeElement, 'width', width + 'px');
+        this._renderer.setElementStyle(this._ngEl.nativeElement, 'height', height + 'px');
+    }
+    
     private _updateSize(col?:number, row?:number):void {
+        return;
         col = (col == undefined) ? 0 : col;
         row = (row == undefined) ? 0 : row;
 
@@ -1017,10 +1031,17 @@ export class NgGrid implements OnInit, DoCheck {
         return false;
     }
 
-    public injectItem(component, id) {
+    public injectItem(component, id, componentData) {
         return this.cmpResolver.resolveComponent(component)
             .then((factory:ComponentFactory) => {
-                return factory.create(this.viewContainer.injector, undefined, this._ngEl.nativeElement.querySelector(`#${id}`));
+                setTimeout(() => {
+                    const ref:ComponentRef = factory.create(this.viewContainer.injector, undefined, this._ngEl.nativeElement.querySelector(`#${id}`));
+                    Object.keys(componentData).forEach(key => {
+                        ref.instance[key] = componentData[key];
+                    });
+                    this.appRef._loadComponent(ref);
+                });
+
             });
     }
 }

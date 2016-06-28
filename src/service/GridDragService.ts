@@ -23,6 +23,7 @@ export class GridDragService {
     public draggedItem:NgGridItem;
     public initialGrid:NgGridComponent;
     public dragItemConf:NgGridItemConfig;
+    private grids:Array<NgGridComponent> = [];
 
     private posOffset:any = {};
 
@@ -63,6 +64,7 @@ export class GridDragService {
             this.initialGrid = undefined;
         });
         this.itemDragged$.subscribe(v => this.mouseMove(v.event.event));
+        this.grids.push(grid);
         return {
             inside,
             outside,
@@ -74,6 +76,10 @@ export class GridDragService {
         oldGrid.removeItem(item.config);
     }
 
+    public refreshAll() {
+        this.grids.forEach(grid => grid.ngGrid.refreshGrid());
+    }
+
     public mouseMove(event) {
         if (this.draggedItem) {
             this.draggedItem.setPosition(event.pageX - this.posOffset.left, event.pageY - this.posOffset.top);
@@ -81,7 +87,6 @@ export class GridDragService {
     }
 
     public mouseUp(event) {
-        console.log('mouseup', event);
         if (this.draggedItem) {
             this.itemReleased$.next({
                 item: this.draggedItem,
@@ -89,6 +94,7 @@ export class GridDragService {
             });
         }
         this.draggedItem = null;
+        this.refreshAll();
     }
 
     public dragStart(item:NgGridItem, grid:NgGridComponent, event) {

@@ -49,6 +49,8 @@ class MyAppComponent extends OnInit {
         'autoResize': false,
         'maintainRatio': false,
         'preferNew': true,
+        'width': 4000,
+        'height': 4000,
     };
     private items:NgGridItemConfig[] = [
         {
@@ -56,14 +58,14 @@ class MyAppComponent extends OnInit {
             row: 1,
             sizex: 8,
             sizey: 3,
-            component: TestComponent,
+            component: {type: TestComponent, data: {name:'tudor'}},
         },
         {
             col: 9,
             row: 1,
             sizex: 8,
             sizey: 3,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         },
         {
             col: 1,
@@ -71,7 +73,7 @@ class MyAppComponent extends OnInit {
             sizex: 16,
             sizey: 2,
             draggable: false,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         },
         {
             col: 1,
@@ -79,21 +81,21 @@ class MyAppComponent extends OnInit {
             sizex: 8,
             sizey: 3,
             draggable: false,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         },
         {
             col: 9,
             row: 6,
             sizex: 8,
             sizey: 6,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         },
         {
             col: 1,
             row: 12,
             sizex: 16,
             sizey: 2,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         },
     ];
     private items2:NgGridItemConfig[] = [
@@ -102,25 +104,25 @@ class MyAppComponent extends OnInit {
             row: 1,
             sizex: 8,
             sizey: 3,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         }, {
             col: 1,
             row: 4,
             sizex: 8,
             sizey: 3,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         }, {
             col: 9,
             row: 1,
             sizex: 8,
             sizey: 3,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         }, {
             col: 1,
             row: 6,
             sizex: 8,
             sizey: 3,
-            component: TestComponent,
+            component: {type: TestComponent, data: {}},
         },
     ];
     private draggable:NgGridItemConfig = {
@@ -128,7 +130,7 @@ class MyAppComponent extends OnInit {
         row: 9,
         sizex: 8,
         sizey: 3,
-        component: NgGridWrapper
+        component: {type: NgGridWrapper, data: {}}
     };
 
     constructor(private gridPositionService:GridPositionService, private gridDragService:GridDragService) {

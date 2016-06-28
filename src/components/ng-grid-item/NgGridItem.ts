@@ -314,10 +314,12 @@ export class NgGridItem implements OnInit, OnDestroy {
             case 'up':
             case 'left':
             default:
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', x + "px");
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', y + "px");
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', null);
-                this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', null);
+                setTimeout(() => {
+                    this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', x + "px");
+                    this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', y + "px");
+                    this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', null);
+                    this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', null);
+                });
                 break;
             case 'right':
                 this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', x + "px");
