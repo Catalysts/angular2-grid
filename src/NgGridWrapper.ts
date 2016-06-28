@@ -8,8 +8,11 @@ import {
 @Component({
     selector: 'ngGridWrapper',
     template: `
-        <ngGrid style="width: 300px; height: 600px;"></ngGrid>
+        <ngGrid config="config"></ngGrid>
     `,
 })
 export class NgGridWrapper {
+    private config = {
+
+    };
 }

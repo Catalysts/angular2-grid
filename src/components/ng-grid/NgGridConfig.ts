@@ -18,6 +18,6 @@ export interface NgGridConfig {
     autoResize?:boolean;
     maintainRatio?:boolean;
     preferNew?:boolean;
-    width?:number;
-    height?:number;
+    width?:any;
+    height?:any;
 }

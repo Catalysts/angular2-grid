@@ -110,8 +110,8 @@ export class NgGrid implements OnInit, DoCheck {
         autoResize: false,
         maintainRatio: false,
         preferNew: false,
-        width: 100,
-        height: 100
+        width: '100%',
+        height: '100%'
     };
     private _config = NgGrid.CONST_DEFAULT_CONFIG;
 
@@ -210,8 +210,8 @@ export class NgGrid implements OnInit, DoCheck {
         this._cascadeGrid();
         this._updateSize();
 
-        const width = config.width || NgGrid.CONST_DEFAULT_CONFIG.width;
-        const height = config.height || NgGrid.CONST_DEFAULT_CONFIG.height;
+        const width = config.width ? config.width + 'px' : NgGrid.CONST_DEFAULT_CONFIG.width;
+        const height = config.height ? config.height + 'px' : NgGrid.CONST_DEFAULT_CONFIG.height;
 
         this.setSize(width, height);
     }
@@ -920,9 +920,9 @@ export class NgGrid implements OnInit, DoCheck {
                     this._itemGrid[y][x] = null;
     }
 
-    private setSize(width: number, height: number) {
-        this._renderer.setElementStyle(this._ngEl.nativeElement, 'width', width + 'px');
-        this._renderer.setElementStyle(this._ngEl.nativeElement, 'height', height + 'px');
+    private setSize(width: string, height: string) {
+        this._renderer.setElementStyle(this._ngEl.nativeElement, 'width', width);
+        this._renderer.setElementStyle(this._ngEl.nativeElement, 'height', height);
     }
     
     private _updateSize(col?:number, row?:number):void {

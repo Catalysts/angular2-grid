@@ -58,7 +58,7 @@ class MyAppComponent extends OnInit {
             row: 1,
             sizex: 8,
             sizey: 3,
-            component: {type: TestComponent, data: {name:'tudor'}},
+            component: {type: TestComponent, data: {name: 'tudor'}},
         },
         {
             col: 9,
@@ -130,7 +130,10 @@ class MyAppComponent extends OnInit {
         row: 9,
         sizex: 8,
         sizey: 3,
-        component: {type: NgGridWrapper, data: {}}
+        component: {
+            type: NgGridWrapper,
+            data: {}
+        }
     };
 
     constructor(private gridPositionService:GridPositionService, private gridDragService:GridDragService) {

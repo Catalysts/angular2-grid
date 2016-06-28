@@ -49,7 +49,7 @@ export class NgGridComponent implements OnInit, OnChanges {
     public ngGrid:NgGrid;
 
     @Input()
-    private items:any[];
+    private items:any[] = [];
 
     public mouseMove$:Subject<any> = new Subject();
     public dragOver$:Subject<any> = new Subject();
