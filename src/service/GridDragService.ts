@@ -9,6 +9,12 @@ import {NgGridItem} from "../components/ng-grid-item/NgGridItem";
 import {NgGridComponent} from "../components/ng-grid/NgGridComponent";
 import {NgGridItemConfig} from "../components/ng-grid-item/NgGridItemConfig";
 
+export interface GridDragEvent {
+    grid: NgGridComponent,
+    event: any,
+    item: NgGridItem
+}
+
 @Injectable()
 export class GridDragService {
     public itemDragged$:Observable<any>;
@@ -16,19 +22,16 @@ export class GridDragService {
 
     private windowMouseMove$:Observable<any>;
     private windowMouseUp$:Observable<any>;
-
-    private releaseOutside:Observable<any>;
-    private releaseOutsideSubscription:Subscription;
+    private windowMouseDown$:Observable<any>;
+    private windowDragOver$:Observable<any>;
+    private windowDrop$:Observable<any>;
 
     public draggedItem:NgGridItem;
     public initialGrid:NgGridComponent;
     public dragItemConf:NgGridItemConfig;
     private grids:Array<NgGridComponent> = [];
 
-    private posOffset:any = {};
-
-    private windowDragOver$;
-    private windowDrop$;
+    public posOffset:any = {};
 
     public constructor(private window:Window) {
         this.windowMouseMove$ = Observable.fromEvent(this.window, 'mousemove').map(e => ({grid: null, event: e}));
@@ -36,15 +39,17 @@ export class GridDragService {
         this.windowDragOver$ = Observable.fromEvent(this.window, 'dragover').map(e => ({grid: null, event: e}));
         this.windowDrop$ = Observable.fromEvent(this.window, 'drop').map(e => ({grid: null, event: e}));
 
-        this.itemDragged$ = this.windowMouseMove$.filter(() => !!this.draggedItem).map(event => ({
-            item: this.draggedItem,
-            event
-        }));
+        this.itemDragged$ = this.windowMouseMove$
+            .filter(() => !!this.draggedItem)
+            .map(event => ({
+                item: this.draggedItem,
+                event
+            }));
 
         this.windowMouseUp$.subscribe(e => this.mouseUp(e));
     }
 
-    public addGrid(grid:NgGridComponent) {
+    public registerGrid(grid:NgGridComponent) {
         const mouseMoveCombined = grid.mouseMove$.merge(this.windowMouseMove$)
             .distinct((a, b) => this.equalScreenPosition(a.event, b.event));
         const dragCombined = mouseMoveCombined
@@ -98,10 +103,12 @@ export class GridDragService {
     }
 
     public dragStart(item:NgGridItem, grid:NgGridComponent, event) {
+        console.log('drag started');
         event.preventDefault();
         this.draggedItem = item;
         this.initialGrid = grid;
         const itemPos = item.getPosition();
+        // console.log(event.pageX, itemPos.left);
         this.posOffset = {'left': (event.pageX - itemPos.left), 'top': (event.pageY - itemPos.top)};
         item.startMoving();
     }

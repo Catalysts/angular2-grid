@@ -3,7 +3,7 @@ import {
     OnInit,
     OnChanges,
     Input,
-    ViewChild, ComponentFactory,
+    ViewChild, ComponentFactory, ElementRef,
 } from '@angular/core';
 
 import {
@@ -40,6 +40,7 @@ import {GridPositionService} from "../../service/GridPositionService";
     host: {
         '(mousemove)': 'mouseMove$.next(toObserverEvent($event))',
         '(mousedown)': 'mouseDown($event)',
+        '(mouseup)': 'mouseUp($event)',
         '(dragover)': 'dragOver($event)',
         '(drop)': 'drop($event)',
     },
@@ -49,28 +50,37 @@ export class NgGridComponent implements OnInit, OnChanges {
     public ngGrid:NgGrid;
 
     @Input()
-    private items:any[] = [];
+    private items:NgGridItemConfig[] = [];
 
     public mouseMove$:Subject<any> = new Subject();
     public dragOver$:Subject<any> = new Subject();
     public newItemAdd$:Subject<any> = new Subject();
 
-    constructor(private gridDragService:GridDragService, private gridPositionService:GridPositionService) {
+    constructor(private gridDragService:GridDragService,
+                private gridPositionService:GridPositionService,
+                private element:ElementRef) {
     }
 
     ngOnInit() {
-        const dragSubscriptors = this.gridDragService.addGrid(this);
+        const dragSubscriptors = this.gridDragService.registerGrid(this);
         dragSubscriptors.inside.subscribe(v => {
             if (this.gridDragService.draggedItem) {
-                setTimeout(() => {
-                    if (!this.ngGrid._placeholderRef) {
-                        this.ngGrid._createPlaceholder(v.itemDragged.item);
-                    } else {
-                        const {left, top} = this.ngGrid._getMousePosition(v.itemDragged.event.event);
-                        const i = this.ngGrid._calculateGridPosition(left, top);
-                        this.ngGrid._placeholderRef.instance.setGridPosition(i.col, i.row, v.itemDragged.item);
-                    }
-                });
+                let {left, top} = this.ngGrid._getMousePosition(v.itemDragged.event.event);
+                left -= this.gridDragService.posOffset.left;
+                top -= this.gridDragService.posOffset.top;
+                const i = this.ngGrid._calculateGridPosition(left, top);
+                const dims = v.itemDragged.item.getSize();
+                const conf = Object.assign({}, v.itemDragged.item.config);
+                conf.col = i.col;
+                conf.row = i.row;
+                this.ngGrid._placeholderRef.instance.setGridPosition(i.col, i.row, v.itemDragged.item);
+                if (this.gridPositionService.validateGridPosition(i.col, i.row, v.itemDragged.item)
+                    && !this.hasCollisions(conf, v.itemDragged.item.config)) {
+                    this.ngGrid._placeholderRef.instance.makeValid();
+                } else {
+                    this.ngGrid._placeholderRef.instance.makeInvalid();
+                }
+                this.ngGrid._placeholderRef.instance.setSize(dims.x, dims.y);
             }
         });
         dragSubscriptors.outside.subscribe(v => {
@@ -78,13 +88,16 @@ export class NgGridComponent implements OnInit, OnChanges {
             // this.gridDragService.refreshAll()
         });
         dragSubscriptors.release.subscribe(v => {
-            const {left, top} = this.ngGrid._getMousePosition(v.move.event);
+            let {left, top} = this.ngGrid._getMousePosition(v.move.event);
+            left -= this.gridDragService.posOffset.left;
+            top -= this.gridDragService.posOffset.top;
             const i = this.ngGrid._calculateGridPosition(left, top);
             let conf = Object.assign({}, v.release.item.config);
             conf.col = i.col;
             conf.row = i.row;
 
-            if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.release.item) && !this.hasCollisions(conf)) {
+            if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.release.item)
+                && !this.hasCollisions(conf, v.release.item.config)) {
                 this.addItem(conf);
                 this.newItemAdd$.next({
                     grid: this,
@@ -92,9 +105,10 @@ export class NgGridComponent implements OnInit, OnChanges {
                 });
             }
             v.release.item.stopMoving();
-            this.ngGrid._placeholderRef.destroy();
-            this.ngGrid._placeholderRef = undefined;
+            this.gridDragService.draggedItem = undefined;
+            this.ngGrid._placeholderRef.instance.setSize(0, 0);
             this.gridDragService.refreshAll();
+            console.log(this.gridDragService.draggedItem);
         });
     }
 
@@ -104,10 +118,12 @@ export class NgGridComponent implements OnInit, OnChanges {
         }
     }
 
-    private hasCollisions(itemConf:NgGridItemConfig):boolean {
-        return this.items.some((conf:NgGridItemConfig) => intersect(
-            toRectangle(conf), toRectangle(itemConf)
-        ));
+    private hasCollisions(itemConf:NgGridItemConfig, initialConf:NgGridItemConfig):boolean {
+        return this.items
+            .filter(c => !(c.col == initialConf.col && c.row == initialConf.row))
+            .some((conf:NgGridItemConfig) => intersect(
+                toRectangle(conf), toRectangle(itemConf)
+            ));
 
         function intersect(r1, r2) {
             return !(r2.left > r1.right ||
@@ -171,6 +187,10 @@ export class NgGridComponent implements OnInit, OnChanges {
             this.gridDragService.dragStart(i, this, e);
         }
         // return false;
+    }
+
+    private mouseUp(e:MouseEvent) {
+        this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
 
     private toObserverEvent(event) {

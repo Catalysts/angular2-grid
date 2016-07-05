@@ -138,6 +138,7 @@ export class NgGrid implements OnInit, DoCheck {
         this._renderer.setElementClass(this._ngEl.nativeElement, 'grid', true);
         if (this.autoStyle) this._renderer.setElementStyle(this._ngEl.nativeElement, 'position', 'relative');
         this.setConfig(this._config);
+        this.initPlaceholder();
     }
 
     public setConfig(config:NgGridConfig):void {
@@ -607,7 +608,7 @@ export class NgGrid implements OnInit, DoCheck {
             this.onDragStop.emit(this._draggingItem);
             this._draggingItem = null;
             this._posOffset = null;
-            this._placeholderRef.destroy();
+            // this._placeholderRef.destroy();
 
             this.onItemChange.emit(this._items.map(item => item.getEventOutput()));
         }
@@ -630,7 +631,7 @@ export class NgGrid implements OnInit, DoCheck {
             this.onResizeStop.emit(this._resizingItem);
             this._resizingItem = null;
             this._resizeDirection = null;
-            this._placeholderRef.destroy();
+            // this._placeholderRef.destroy();
 
             this.onItemChange.emit(this._items.map(item => item.getEventOutput()));
         }
@@ -1007,22 +1008,27 @@ export class NgGrid implements OnInit, DoCheck {
         return this._items.find(el => isPositionInside(el.getDimensions(), el.getPosition()));
     }
 
+    private initPlaceholder() {
+        this.cmpResolver.resolveComponent(NgGridPlaceholder)
+            .then((factory:ComponentFactory) => this.viewContainer.createComponent(factory))
+            .then(componentRef => {
+                this._placeholderRef = componentRef;
+                this._placeholderRef.instance.registerGrid(this);
+                this._placeholderRef.instance.setSize(0, 0);
+            });
+    }
+
     public _createPlaceholder(item:NgGridItem) {
         const pos = item.getGridPosition(), dims = item.getSize();
         this.cmpResolver.resolveComponent(NgGridPlaceholder)
             .then((factory:ComponentFactory) => {
-                console.log(item.containerRef);
                 return item.containerRef.createComponent(factory, item.containerRef.length, item.containerRef.parentInjector);
             })
             .then(componentRef => {
-                // setTimeout(() => {
                 this._placeholderRef = componentRef;
-                // const placeholder = this._placeholderRef.instance;
                 this._placeholderRef.instance.registerGrid(this);
                 this._placeholderRef.instance.setGridPosition(pos.col, pos.row, item);
                 this._placeholderRef.instance.setSize(dims.x, dims.y);
-                console.log('creating placeholder', item, this._placeholderRef);
-                // });
             });
     }
 

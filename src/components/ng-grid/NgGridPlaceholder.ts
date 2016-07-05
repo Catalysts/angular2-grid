@@ -42,16 +42,26 @@ export class NgGridPlaceholder implements OnInit {
     }
 
     public setGridPosition(col:number, row:number, item:NgGridItem):void {
-        if (!this.gridPositionService.validateGridPosition(col, row, item)) {
-            this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', true);
-            this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', false);
-        } else {
-            this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', false);
-            this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', true);
-        }
+        // if (!this.gridPositionService.validateGridPosition(col, row, item)) {
+        //     this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', true);
+        //     this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', false);
+        // } else {
+        //     this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', false);
+        //     this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', true);
+        // }
         this._col = col;
         this._row = row;
         this._recalculatePosition();
+    }
+
+    public makeInvalid() {
+        this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', true);
+        this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', false);
+    }
+
+    public makeValid() {
+        this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', false);
+        this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', true);
     }
 
     private _setPosition(x:number, y:number):void {
@@ -85,6 +95,9 @@ export class NgGridPlaceholder implements OnInit {
     }
 
     private _setDimensions(w:number, h:number):void {
+        w = w < 0 ? 0 : w;
+        h = h < 0 ? 0 : h;
+        console.log(`set size to ${w}, ${h}`);
         this._renderer.setElementStyle(this._ngEl.nativeElement, 'width', w + "px");
         this._renderer.setElementStyle(this._ngEl.nativeElement, 'height', h + "px");
     }
@@ -99,6 +112,7 @@ export class NgGridPlaceholder implements OnInit {
     private _recalculateDimensions():void {
         var w = (this._ngGrid.colWidth * this._sizex) + ((this._ngGrid.marginLeft + this._ngGrid.marginRight) * (this._sizex - 1));
         var h = (this._ngGrid.rowHeight * this._sizey) + ((this._ngGrid.marginTop + this._ngGrid.marginBottom) * (this._sizey - 1));
+        console.log(w,h);
         this._setDimensions(w, h);
     }
 

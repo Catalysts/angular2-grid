@@ -16,6 +16,7 @@ import {NgGridItemEvent} from './NgGridItemEvent';
 import {NgGridItemConfig} from './NgGridItemConfig';
 import {NgGrid} from '../ng-grid/NgGrid';
 import {UUID} from 'angular2-uuid';
+import {Subject} from "rxjs/Rx";
 
 @Directive({
     selector: '[ngGridItem]',
@@ -42,6 +43,8 @@ export class NgGridItem implements OnInit, OnDestroy {
     @Output() public onChangeStop:EventEmitter<NgGridItemEvent> = new EventEmitter<NgGridItemEvent>();
     @Output() public onChangeAny:EventEmitter<NgGridItemEvent> = new EventEmitter<NgGridItemEvent>();
     @Output() public ngGridItemChange:EventEmitter<NgGridItemConfig> = new EventEmitter<NgGridItemConfig>();
+
+    public mouseDown$:Subject<any> = new Subject();
 
     //	Default config
     private static CONST_DEFAULT_CONFIG:NgGridItemConfig = {
