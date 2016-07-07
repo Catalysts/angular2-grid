@@ -87,7 +87,16 @@ export class GridDragService {
 
     public mouseMove(event) {
         if (this.draggedItem) {
-            this.draggedItem.setPosition(event.pageX - this.posOffset.left, event.pageY - this.posOffset.top);
+            let parentTop = this.draggedItem._ngEl.nativeElement.parentElement.getBoundingClientRect().top;
+            parentTop = parentTop > 0 ? parentTop : 0;
+
+            let parentLeft = this.draggedItem._ngEl.nativeElement.parentElement.getBoundingClientRect().left;
+            parentLeft = parentLeft > 0 ? parentLeft : 0;
+
+            let left = event.pageX - this.posOffset.left - parentLeft;
+            let top = event.pageY - this.posOffset.top - parentTop;
+
+            this.draggedItem.setPosition(left, top);
         }
     }
 
@@ -107,7 +116,7 @@ export class GridDragService {
         event.preventDefault();
         this.draggedItem = item;
         this.initialGrid = grid;
-        const itemPos = item.getPosition();
+        const itemPos = item.getPagePosition();
         // console.log(event.pageX, itemPos.left);
         this.posOffset = {'left': (event.pageX - itemPos.left), 'top': (event.pageY - itemPos.top)};
         item.startMoving();

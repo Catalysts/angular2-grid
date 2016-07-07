@@ -129,10 +129,35 @@ class MyAppComponent extends OnInit {
         col: 9,
         row: 9,
         sizex: 8,
-        sizey: 3,
+        sizey: 8,
         component: {
-            type: NgGridWrapper,
-            data: {}
+            type: NgGridComponent,
+            data: {
+                config: {
+                    'margins': [5],
+                    'draggable': true,
+                    'resizable': false,
+                    'maxCols': 10,
+                    'maxRows': 10,
+                    'visibleCols': 0,
+                    'visibleRows': 0,
+                    'minCols': 1,
+                    'minRows': 1,
+                    'colWidth': 50,
+                    'rowHeight': 50,
+                    'cascade': 'off',
+                    'minWidth': 50,
+                    'minHeight': 50,
+                    'fixToGrid': false,
+                    'autoStyle': true,
+                    'autoResize': false,
+                    'maintainRatio': false,
+                    'preferNew': true,
+                    'width': 500,
+                    'height': 500,
+                },
+                items: [],
+            }
         }
     };
 

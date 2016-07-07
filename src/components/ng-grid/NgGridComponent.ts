@@ -67,7 +67,7 @@ export class NgGridComponent implements OnInit, OnChanges {
             if (this.gridDragService.draggedItem) {
                 let {left, top} = this.ngGrid._getMousePosition(v.itemDragged.event.event);
                 left -= this.gridDragService.posOffset.left;
-                // top -= this.gridDragService.posOffset.top;
+                top -= this.gridDragService.posOffset.top;
                 const i = this.ngGrid._calculateGridPosition(left, top);
                 // console.log(i, left, top);
                 const dims = v.itemDragged.item.getSize();
@@ -86,13 +86,13 @@ export class NgGridComponent implements OnInit, OnChanges {
             }
         });
         dragSubscriptors.outside.subscribe(v => {
-
-            // this.gridDragService.refreshAll()
+            this.ngGrid._placeholderRef.instance.setSize(0, 0);
         });
         dragSubscriptors.release.subscribe(v => {
             let {left, top} = this.ngGrid._getMousePosition(v.move.event);
+            // console.log(this.gridDragService.posOffset);
             left -= this.gridDragService.posOffset.left;
-            // top -= this.gridDragService.posOffset.top;
+            top -= this.gridDragService.posOffset.top;
             const i = this.ngGrid._calculateGridPosition(left, top);
             let conf = Object.assign({}, v.release.item.config);
             conf.col = i.col;

@@ -236,6 +236,13 @@ export class NgGridItem implements OnInit, OnDestroy {
         return {'left': this._elemLeft, 'top': this._elemTop}
     }
 
+    public getPagePosition() {
+        return {
+            left: this._ngEl.nativeElement.getBoundingClientRect().left,
+            top: this._ngEl.nativeElement.getBoundingClientRect().top + window.scrollY
+        };
+    }
+
     public getGridPosition():{ col:number, row:number } {
         return {'col': this._col, 'row': this._row}
     }
@@ -313,16 +320,15 @@ export class NgGridItem implements OnInit, OnDestroy {
     }
 
     public setPosition(x:number, y:number):void {
+        // console.log(x,y);
         switch (this._ngGrid.cascade) {
             case 'up':
             case 'left':
             default:
-                setTimeout(() => {
                     this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', x + "px");
                     this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', y + "px");
                     this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', null);
                     this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', null);
-                });
                 break;
             case 'right':
                 this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', x + "px");
@@ -353,6 +359,7 @@ export class NgGridItem implements OnInit, OnDestroy {
         var style = window.getComputedStyle(this._ngEl.nativeElement);
         this._ngEl.nativeElement.style['pointer-events'] = 'none';
         if (this._ngGrid.autoStyle) this._renderer.setElementStyle(this._ngEl.nativeElement, 'z-index', (parseInt(style.getPropertyValue('z-index')) + 1).toString());
+        // this._renderer.setElementStyle(this._ngEl.nativeElement, 'position', 'fixed');
     }
 
     public stopMoving():void {
@@ -360,6 +367,7 @@ export class NgGridItem implements OnInit, OnDestroy {
         var style = window.getComputedStyle(this._ngEl.nativeElement);
         this._ngEl.nativeElement.style['pointer-events'] = 'auto';
         if (this._ngGrid.autoStyle) this._renderer.setElementStyle(this._ngEl.nativeElement, 'z-index', (parseInt(style.getPropertyValue('z-index')) - 1).toString());
+        // this._renderer.setElementStyle(this._ngEl.nativeElement, 'position', 'absolute');
     }
 
     public recalculateSelf():void {
