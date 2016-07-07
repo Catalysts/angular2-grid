@@ -103,7 +103,7 @@ export class GridDragService {
     }
 
     public dragStart(item:NgGridItem, grid:NgGridComponent, event) {
-        console.log('drag started');
+        // console.log('drag started');
         event.preventDefault();
         this.draggedItem = item;
         this.initialGrid = grid;

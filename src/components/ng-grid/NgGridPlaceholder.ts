@@ -97,22 +97,21 @@ export class NgGridPlaceholder implements OnInit {
     private _setDimensions(w:number, h:number):void {
         w = w < 0 ? 0 : w;
         h = h < 0 ? 0 : h;
-        console.log(`set size to ${w}, ${h}`);
         this._renderer.setElementStyle(this._ngEl.nativeElement, 'width', w + "px");
         this._renderer.setElementStyle(this._ngEl.nativeElement, 'height', h + "px");
     }
 
     //	Private methods
     private _recalculatePosition():void {
-        var x = (this._ngGrid.colWidth + this._ngGrid.marginLeft + this._ngGrid.marginRight) * (this._col - 1) + this._ngGrid.marginLeft;
-        var y = (this._ngGrid.rowHeight + this._ngGrid.marginTop + this._ngGrid.marginBottom) * (this._row - 1) + this._ngGrid.marginTop;
+        var x = this._ngGrid.pagePosition.pageX + (this._ngGrid.colWidth + this._ngGrid.marginLeft + this._ngGrid.marginRight) * (this._col - 1) + this._ngGrid.marginLeft;
+        var y = this._ngGrid.pagePosition.pageY + (this._ngGrid.rowHeight + this._ngGrid.marginTop + this._ngGrid.marginBottom) * (this._row - 1) + this._ngGrid.marginTop;
+        console.log(x, y);
         this._setPosition(x, y);
     }
 
     private _recalculateDimensions():void {
         var w = (this._ngGrid.colWidth * this._sizex) + ((this._ngGrid.marginLeft + this._ngGrid.marginRight) * (this._sizex - 1));
         var h = (this._ngGrid.rowHeight * this._sizey) + ((this._ngGrid.marginTop + this._ngGrid.marginBottom) * (this._sizey - 1));
-        console.log(w,h);
         this._setDimensions(w, h);
     }
 

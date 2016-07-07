@@ -125,6 +125,13 @@ export class NgGrid implements OnInit, DoCheck {
                 private appRef:ApplicationRef) {
     }
 
+    get pagePosition() {
+        return {
+            pageX: this._ngEl.nativeElement.offsetLeft,
+            pageY: this._ngEl.nativeElement.offsetTop
+        };
+    }
+
     //	[ng-grid] attribute handler
     set config(v:NgGridConfig) {
         this.setConfig(v);
