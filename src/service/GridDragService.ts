@@ -20,6 +20,7 @@ export class GridDragService {
     private window = window;
     public itemDragged$:Observable<any>;
     public itemReleased$:Subject<any> = new Subject();
+    public itemAdded$:Subject<any> = new Subject();
 
     private windowMouseMove$:Observable<any>;
     private windowMouseUp$:Observable<any>;
@@ -73,6 +74,7 @@ export class GridDragService {
             this.initialGrid.removeItem(v.item.config);
             this.draggedItem = undefined;
             this.initialGrid = undefined;
+            this.itemAdded$.next(this.getPlacedItems());
         });
         this.itemDragged$.subscribe(v => this.mouseMove(v.event.event));
         this.grids.push(grid);

@@ -8,7 +8,9 @@ import {
 @Component({
     selector: 'testComponent',
     template: `
-        <div style="width: 100px; height: 100px; background: red;">Hello, {{name}}</div>
+        <div style="width: 100px; height: 100px; background: red;">Hello, {{name}}
+            <button (mousedown)="clickButton($event)">Test</button>
+        </div>
     `,
 })
 export class TestComponent implements OnInit {
@@ -19,5 +21,12 @@ export class TestComponent implements OnInit {
 
     ngOnInit() {
         this.changeDetectorRef.detectChanges();
+    }
+
+    clickButton(e) {
+        console.log('click');
+        e.preventDefault();
+        e.stopPropagation();
+        return true;
     }
 }
