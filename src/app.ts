@@ -153,8 +153,8 @@ class MyAppComponent extends OnInit {
                     'autoResize': false,
                     'maintainRatio': false,
                     'preferNew': true,
-                    'width': 500,
-                    'height': 500,
+                    'width': 400,
+                    'height': 400,
                 },
                 items: [],
             }
@@ -174,4 +174,4 @@ class MyAppComponent extends OnInit {
 }
 
 enableProdMode();
-bootstrap(MyAppComponent, [provide(Window, {useValue: window})]);
+bootstrap(MyAppComponent);

@@ -319,6 +319,19 @@ export class NgGridItem implements OnInit, OnDestroy {
         };
     }
 
+    public move(event:MouseEvent, offset) {
+        let parentTop = this._ngEl.nativeElement.parentElement.getBoundingClientRect().top;
+        parentTop = parentTop > 0 ? parentTop : 0;
+
+        let parentLeft = this._ngEl.nativeElement.parentElement.getBoundingClientRect().left;
+        parentLeft = parentLeft > 0 ? parentLeft : 0;
+
+        let left = event.pageX - offset.left - parentLeft;
+        let top = event.pageY - offset.top - parentTop;
+
+        this.setPosition(left, top);
+    }
+
     public setPosition(x:number, y:number):void {
         // console.log(x,y);
         switch (this._ngGrid.cascade) {

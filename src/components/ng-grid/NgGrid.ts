@@ -16,7 +16,6 @@ import {NgGridItem} from '../ng-grid-item/NgGridItem';
 import {NgGridConfig} from './NgGridConfig';
 import {NgGridPlaceholder} from './NgGridPlaceholder';
 import {NgGridItemEvent} from '../ng-grid-item/NgGridItemEvent';
-import {GridDragService} from "../../service/GridDragService";
 import {Observable} from "rxjs/Rx";
 
 @Directive({
@@ -121,7 +120,6 @@ export class NgGrid implements OnInit, DoCheck {
                 private _renderer:Renderer,
                 private cmpResolver:ComponentResolver,
                 private viewContainer:ViewContainerRef,
-                private gridDragService:GridDragService,
                 private appRef:ApplicationRef) {
     }
 
@@ -932,7 +930,7 @@ export class NgGrid implements OnInit, DoCheck {
         this._renderer.setElementStyle(this._ngEl.nativeElement, 'width', width);
         this._renderer.setElementStyle(this._ngEl.nativeElement, 'height', height);
     }
-    
+
     private _updateSize(col?:number, row?:number):void {
         return;
         col = (col == undefined) ? 0 : col;
@@ -1013,6 +1011,15 @@ export class NgGrid implements OnInit, DoCheck {
         };
 
         return this._items.find(el => isPositionInside(el.getDimensions(), el.getPosition()));
+    }
+
+    public getItem(e:MouseEvent) {
+        return this._getItemFromPosition(this._getMousePosition(e));
+    }
+
+    public getGridPositionOfEvent(event, offset) {
+        let {left, top} = this._getMousePosition(event);
+        return this._calculateGridPosition(left - offset.left, top - offset.top);
     }
 
     private initPlaceholder() {

@@ -10,19 +10,19 @@ import {NgGridComponent} from "../components/ng-grid/NgGridComponent";
 import {NgGridItemConfig} from "../components/ng-grid-item/NgGridItemConfig";
 
 export interface GridDragEvent {
-    grid: NgGridComponent,
-    event: any,
-    item: NgGridItem
+    grid:NgGridComponent,
+    event:any,
+    item:NgGridItem
 }
 
 @Injectable()
 export class GridDragService {
+    private window = window;
     public itemDragged$:Observable<any>;
     public itemReleased$:Subject<any> = new Subject();
 
     private windowMouseMove$:Observable<any>;
     private windowMouseUp$:Observable<any>;
-    private windowMouseDown$:Observable<any>;
     private windowDragOver$:Observable<any>;
     private windowDrop$:Observable<any>;
 
@@ -33,7 +33,7 @@ export class GridDragService {
 
     public posOffset:any = {};
 
-    public constructor(private window:Window) {
+    public constructor() {
         this.windowMouseMove$ = Observable.fromEvent(this.window, 'mousemove').map(e => ({grid: null, event: e}));
         this.windowMouseUp$ = Observable.fromEvent(this.window, 'mouseup').map(e => ({grid: null, event: e}));
         this.windowDragOver$ = Observable.fromEvent(this.window, 'dragover').map(e => ({grid: null, event: e}));
@@ -49,9 +49,15 @@ export class GridDragService {
         this.windowMouseUp$.subscribe(e => this.mouseUp(e));
     }
 
+    public getPlacedItems() {
+        return this.grids
+            .map(grid => grid.items)
+            .reduce((allItems, items) => allItems.concat(items));
+    }
+
     public registerGrid(grid:NgGridComponent) {
         const mouseMoveCombined = grid.mouseMove$.merge(this.windowMouseMove$)
-            .distinct((a, b) => this.equalScreenPosition(a.event, b.event));
+            .distinct((a, b) => GridDragService.equalScreenPosition(a.event, b.event));
         const dragCombined = mouseMoveCombined
             .withLatestFrom(this.itemDragged$, (x, y) => ({
                 itemDragged: y,
@@ -61,10 +67,10 @@ export class GridDragService {
         const inside = dragCombined.filter(it => it.grid != null);
         const outside = dragCombined.filter(it => it.grid == null);
         const release = this.itemReleased$.withLatestFrom(inside, (x, y) => ({release: x, move: y}))
-            .filter(x => this.equalScreenPosition(x.release.event, x.move.event));
+            .filter(x => GridDragService.equalScreenPosition(x.release.event, x.move.event));
 
         grid.newItemAdd$.subscribe(v => {
-            this.removeItemFromOldGrid(v.item, this.initialGrid);
+            this.initialGrid.removeItem(v.item.config);
             this.draggedItem = undefined;
             this.initialGrid = undefined;
         });
@@ -77,26 +83,13 @@ export class GridDragService {
         };
     }
 
-    private removeItemFromOldGrid(item, oldGrid) {
-        oldGrid.removeItem(item.config);
-    }
-
     public refreshAll() {
         this.grids.forEach(grid => grid.ngGrid.refreshGrid());
     }
 
     public mouseMove(event) {
         if (this.draggedItem) {
-            let parentTop = this.draggedItem._ngEl.nativeElement.parentElement.getBoundingClientRect().top;
-            parentTop = parentTop > 0 ? parentTop : 0;
-
-            let parentLeft = this.draggedItem._ngEl.nativeElement.parentElement.getBoundingClientRect().left;
-            parentLeft = parentLeft > 0 ? parentLeft : 0;
-
-            let left = event.pageX - this.posOffset.left - parentLeft;
-            let top = event.pageY - this.posOffset.top - parentTop;
-
-            this.draggedItem.setPosition(left, top);
+            this.draggedItem.move(event, this.posOffset);
         }
     }
 
@@ -112,17 +105,15 @@ export class GridDragService {
     }
 
     public dragStart(item:NgGridItem, grid:NgGridComponent, event) {
-        // console.log('drag started');
         event.preventDefault();
         this.draggedItem = item;
         this.initialGrid = grid;
         const itemPos = item.getPagePosition();
-        // console.log(event.pageX, itemPos.left);
         this.posOffset = {'left': (event.pageX - itemPos.left), 'top': (event.pageY - itemPos.top)};
         item.startMoving();
     }
 
-    private equalScreenPosition(e1, e2):boolean {
+    private static equalScreenPosition(e1, e2):boolean {
         return e1.screenX == e2.screenX && e1.screenY == e2.screenY;
     }
 }
