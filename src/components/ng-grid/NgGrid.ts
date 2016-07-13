@@ -520,7 +520,7 @@ export class NgGrid implements OnInit, DoCheck {
 
             if (gridPos.col != itemPos.col || gridPos.row != itemPos.row) {
                 this._draggingItem.setGridPosition(gridPos.col, gridPos.row, false);
-                this._placeholderRef.instance.setGridPosition(gridPos.col, gridPos.row, this._draggingItem);
+                this._placeholderRef.instance.setGridPosition(gridPos.col, gridPos.row);
 
                 if (['up', 'down', 'left', 'right'].indexOf(this.cascade) >= 0) {
                     // this._fixGridCollisions(gridPos, dims);
@@ -1041,7 +1041,7 @@ export class NgGrid implements OnInit, DoCheck {
             .then(componentRef => {
                 this._placeholderRef = componentRef;
                 this._placeholderRef.instance.registerGrid(this);
-                this._placeholderRef.instance.setGridPosition(pos.col, pos.row, item);
+                this._placeholderRef.instance.setGridPosition(pos.col, pos.row);
                 this._placeholderRef.instance.setSize(dims.x, dims.y);
             });
     }
@@ -1051,14 +1051,15 @@ export class NgGrid implements OnInit, DoCheck {
         return false;
     }
 
-    public injectItem(component, id, componentData) {
+    public injectItem(component, element, componentData) {
         return this.cmpResolver.resolveComponent(component)
             .then((factory:ComponentFactory) => {
                 setTimeout(() => {
-                    const ref:ComponentRef = factory.create(this.viewContainer.injector, undefined, this._ngEl.nativeElement.querySelector(`#${id}`));
-                    Object.keys(componentData).forEach(key => {
-                        ref.instance[key] = componentData[key];
-                    });
+                    const ref:ComponentRef = factory.create(this.viewContainer.injector, undefined, element);
+                    // Object.keys(componentData).forEach(key => {
+                    //     ref.instance[key] = componentData[key];
+                    // });
+                    Object.assign(ref.instance, componentData);
                     this.appRef._loadComponent(ref);
                 });
 

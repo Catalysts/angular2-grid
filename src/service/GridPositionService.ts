@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {NgGridItem} from '../components/ng-grid-item/NgGridItem';
+import {NgGridItemConfig} from "../components/ng-grid-item/NgGridItemConfig";
 
 export interface ConditionFn {
-    (gridX: number, gridY: number, gridItem: NgGridItem): boolean;
+    (gridX: number, gridY: number, gridItem: NgGridItemConfig): boolean;
 }
 
 @Injectable()
@@ -13,7 +13,7 @@ export class GridPositionService {
         this.conditions.push(condition);
     }
 
-    validateGridPosition(gridX: number, gridY: number, gridItem: NgGridItem): boolean {
+    validateGridPosition(gridX: number, gridY: number, gridItem: NgGridItemConfig): boolean {
         return this.conditions
             .map(condition => condition(gridX, gridY, gridItem))
             .reduce((a, b) => a && b, true);

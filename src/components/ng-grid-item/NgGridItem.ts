@@ -64,7 +64,7 @@ export class NgGridItem implements OnInit, OnDestroy {
     public isResizable:boolean = true;
 
     //	Private variables
-    public id: string = UUID.UUID();
+    public id:string = UUID.UUID();
     private _col:number = 1;
     private _row:number = 1;
     private _sizex:number = 1;
@@ -321,10 +321,10 @@ export class NgGridItem implements OnInit, OnDestroy {
 
     public move(event:MouseEvent, offset) {
         let parentTop = this._ngEl.nativeElement.parentElement.getBoundingClientRect().top;
-        parentTop = parentTop > 0 ? parentTop : 0;
+        parentTop += window.scrollY;
 
         let parentLeft = this._ngEl.nativeElement.parentElement.getBoundingClientRect().left;
-        parentLeft = parentLeft > 0 ? parentLeft : 0;
+        parentLeft += window.scrollX;
 
         let left = event.pageX - offset.left - parentLeft;
         let top = event.pageY - offset.top - parentTop;
@@ -333,15 +333,14 @@ export class NgGridItem implements OnInit, OnDestroy {
     }
 
     public setPosition(x:number, y:number):void {
-        // console.log(x,y);
         switch (this._ngGrid.cascade) {
             case 'up':
             case 'left':
             default:
-                    this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', x + "px");
-                    this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', y + "px");
-                    this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', null);
-                    this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', null);
+                this._renderer.setElementStyle(this._ngEl.nativeElement, 'left', x + "px");
+                this._renderer.setElementStyle(this._ngEl.nativeElement, 'top', y + "px");
+                this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', null);
+                this._renderer.setElementStyle(this._ngEl.nativeElement, 'bottom', null);
                 break;
             case 'right':
                 this._renderer.setElementStyle(this._ngEl.nativeElement, 'right', x + "px");

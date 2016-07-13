@@ -41,14 +41,7 @@ export class NgGridPlaceholder implements OnInit {
         this._recalculateDimensions();
     }
 
-    public setGridPosition(col:number, row:number, item:NgGridItem):void {
-        // if (!this.gridPositionService.validateGridPosition(col, row, item)) {
-        //     this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', true);
-        //     this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', false);
-        // } else {
-        //     this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder-invalid', false);
-        //     this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-placeholder', true);
-        // }
+    public setGridPosition(col:number, row:number):void {
         this._col = col;
         this._row = row;
         this._recalculatePosition();

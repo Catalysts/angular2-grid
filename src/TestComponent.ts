@@ -24,7 +24,6 @@ export class TestComponent implements OnInit {
     }
 
     clickButton(e) {
-        console.log('click');
         e.preventDefault();
         e.stopPropagation();
         return true;

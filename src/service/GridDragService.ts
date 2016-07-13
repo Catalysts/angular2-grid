@@ -69,11 +69,14 @@ export class GridDragService {
         const outside = dragCombined.filter(it => it.grid == null);
         const release = this.itemReleased$.withLatestFrom(inside, (x, y) => ({release: x, move: y}))
             .filter(x => GridDragService.equalScreenPosition(x.release.event, x.move.event));
+        const releaseOutside = this.itemReleased$.withLatestFrom(outside, (x, y) => ({release: x, move: y}))
+            .filter(x => GridDragService.equalScreenPosition(x.release.event, x.move.event));
 
         grid.newItemAdd$.subscribe(v => {
-            this.initialGrid.removeItem(v.item.config);
+            this.initialGrid.removeItem(v.oldConfig);
             this.draggedItem = undefined;
             this.initialGrid = undefined;
+            grid.addItem(v.newConfig);
             this.itemAdded$.next(this.getPlacedItems());
         });
         this.itemDragged$.subscribe(v => this.mouseMove(v.event.event));
@@ -82,6 +85,7 @@ export class GridDragService {
             inside,
             outside,
             release,
+            releaseOutside,
         };
     }
 
@@ -103,7 +107,6 @@ export class GridDragService {
             });
         }
         this.draggedItem = null;
-        this.refreshAll();
     }
 
     public dragStart(item:NgGridItem, grid:NgGridComponent, event) {
