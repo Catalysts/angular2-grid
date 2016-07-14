@@ -4,6 +4,7 @@
 import {
     Component, Input, ChangeDetectorRef, OnInit,
 } from '@angular/core';
+import {GridDragService} from "./service/GridDragService";
 
 @Component({
     selector: 'testComponent',
@@ -15,8 +16,10 @@ import {
 })
 export class TestComponent implements OnInit {
     name:string = 'aa';
+    id:string;
 
-    constructor(private changeDetectorRef:ChangeDetectorRef) {
+    constructor(private changeDetectorRef:ChangeDetectorRef,
+    private gridDragService:GridDragService) {
     }
 
     ngOnInit() {
@@ -24,6 +27,7 @@ export class TestComponent implements OnInit {
     }
 
     clickButton(e) {
+        this.gridDragService.removeItemById(this.id);
         e.preventDefault();
         e.stopPropagation();
         return true;

@@ -54,57 +54,93 @@ class MyAppComponent extends OnInit {
     };
     private items:NgGridItemConfig[] = [
         {
+            id: '1',
             col: 1,
             row: 1,
             sizex: 8,
             sizey: 3,
-            component: {type: TestComponent, data: {name: 'tudor'}},
+            component: {
+                type: TestComponent, data: {
+                    name: 'tudor',
+                    id: '1',
+                }
+            },
         },
         {
+            id: '2',
             col: 9,
             row: 1,
             sizex: 8,
             sizey: 3,
-            component: {type: TestComponent, data: {}},
+            component: {
+                type: TestComponent, data: {
+                    id: '2',
+                }
+            },
         },
         {
+            id: '4',
             col: 1,
             row: 4,
             sizex: 16,
             sizey: 2,
             draggable: false,
-            component: {type: TestComponent, data: {}},
+            component: {
+                type: TestComponent, data: {
+                    id: '4',
+                }
+            },
         },
         {
+            id: '5',
             col: 1,
             row: 6,
             sizex: 8,
             sizey: 3,
             draggable: false,
-            component: {type: TestComponent, data: {}},
+            component: {
+                type: TestComponent, data: {
+                    id: '5',
+                }
+            },
         },
         {
+            id: '6',
             col: 9,
             row: 6,
             sizex: 8,
             sizey: 6,
-            component: {type: TestComponent, data: {}},
+            component: {
+                type: TestComponent, data: {
+                    id: (Math.random() * 100) % 100,
+                }
+            },
         },
         {
+            id: '6',
             col: 1,
             row: 12,
             sizex: 16,
             sizey: 2,
-            component: {type: TestComponent, data: {}},
+            component: {
+                type: TestComponent, data: {
+                    id: (Math.random() * 100) % 100,
+                }
+            },
         },
     ];
     private items2:NgGridItemConfig[] = [
         {
+            id: '7',
             col: 1,
             row: 1,
             sizex: 8,
             sizey: 3,
-            component: {type: TestComponent, data: {}},
+            component: {
+                type: TestComponent, data: {
+                    id: '7'
+                }
+            },
         }, {
             col: 1,
             row: 4,

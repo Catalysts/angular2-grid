@@ -34,9 +34,15 @@ export class GridDragService {
 
     public posOffset:any = {};
 
+    private removing:boolean = false;
+
     public constructor() {
         this.windowMouseMove$ = Observable.fromEvent(this.window, 'mousemove').map(e => ({grid: null, event: e}));
-        this.windowMouseUp$ = Observable.fromEvent(this.window, 'mouseup').map(e => ({grid: null, event: e}));
+        this.windowMouseUp$ = Observable.fromEvent(this.window, 'mouseup').map(e => ({
+            grid: null,
+            event: e,
+            item: this.draggedItem
+        }));
         this.windowDragOver$ = Observable.fromEvent(this.window, 'dragover').map(e => ({grid: null, event: e}));
         this.windowDrop$ = Observable.fromEvent(this.window, 'drop').map(e => ({grid: null, event: e}));
 
@@ -48,6 +54,16 @@ export class GridDragService {
             }));
 
         this.windowMouseUp$.subscribe(e => this.mouseUp(e));
+    }
+
+    public removeItemById(id:string) {
+        this.removing = true;
+        this.grids.forEach(grid => {
+            if (grid.items.map(item => item.id).includes(id)) {
+                grid.removeItemById(id);
+                this.removing = false;
+            }
+        })
     }
 
     public getPlacedItems() {
@@ -69,8 +85,18 @@ export class GridDragService {
         const outside = dragCombined.filter(it => it.grid == null);
         const release = this.itemReleased$.withLatestFrom(inside, (x, y) => ({release: x, move: y}))
             .filter(x => GridDragService.equalScreenPosition(x.release.event, x.move.event));
-        const releaseOutside = this.itemReleased$.withLatestFrom(outside, (x, y) => ({release: x, move: y}))
-            .filter(x => GridDragService.equalScreenPosition(x.release.event, x.move.event));
+        grid.newItemAdd$
+            .merge(this.windowMouseUp$)
+            .distinct((a, b) => GridDragService.equalScreenPosition(a.event, b.event))
+            .filter(x => !x.grid)
+            .subscribe((x) => {
+                if (this.initialGrid && this.draggedItem) {
+                    this.initialGrid.removeItem(this.draggedItem.config);
+                    this.initialGrid.addItem(this.draggedItem.config);
+                    this.draggedItem = undefined;
+                    this.initialGrid = undefined;
+                }
+            });
 
         grid.newItemAdd$.subscribe(v => {
             this.initialGrid.removeItem(v.oldConfig);
@@ -84,13 +110,8 @@ export class GridDragService {
         return {
             inside,
             outside,
-            release,
-            releaseOutside,
+            release
         };
-    }
-
-    public refreshAll() {
-        this.grids.forEach(grid => grid.ngGrid.refreshGrid());
     }
 
     public mouseMove(event) {
@@ -106,7 +127,6 @@ export class GridDragService {
                 event: event.event,
             });
         }
-        this.draggedItem = null;
     }
 
     public dragStart(item:NgGridItem, grid:NgGridComponent, event) {

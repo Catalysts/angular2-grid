@@ -99,13 +99,12 @@ export class NgGridComponent implements OnInit {
             this.newItemAdd$.next({
                 grid: this,
                 newConfig: conf,
-                oldConfig:v.release.item.config
+                oldConfig:v.release.item.config,
+                event: v.release.event
             });
         }
         v.release.item.stopMoving();
-        this.gridDragService.draggedItem = undefined;
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
-        this.gridDragService.refreshAll();
     }
 
     private itemConfigFromEvent(config:NgGridItemConfig, event:MouseEvent):NgGridItemConfig {
@@ -179,7 +178,10 @@ export class NgGridComponent implements OnInit {
                 return true;
             }
         });
-        // this.injectItems(this.items);
+    }
+
+    public removeItemById(id:string) {
+        this.items = this.items.filter(i => i.id != id);
     }
 
     public addItem(item:NgGridItemConfig) {
