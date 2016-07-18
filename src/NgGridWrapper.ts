@@ -4,15 +4,21 @@
 import {
     Component,
 } from '@angular/core';
+import {NgGridComponent} from "./components/ng-grid/NgGridComponent";
 
 @Component({
     selector: 'ngGridWrapper',
+    inputs: [
+        'items: items',
+        'config: config',
+    ],
+    directives: [
+        NgGridComponent
+    ],
     template: `
-        <ngGrid config="config"></ngGrid>
+        <ngGrid [config]="config" [items]="items"></ngGrid>
     `,
 })
 export class NgGridWrapper {
-    private config = {
-
-    };
+    public items, config;
 }

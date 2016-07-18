@@ -8,6 +8,8 @@ import "rxjs/add/operator/combineLatest";
 import {NgGridItem} from "../components/ng-grid-item/NgGridItem";
 import {NgGridComponent} from "../components/ng-grid/NgGridComponent";
 import {NgGridItemConfig} from "../components/ng-grid-item/NgGridItemConfig";
+import {NgGridWrapper} from "src/NgGridWrapper";
+import {isArray} from "@angular/core/src/facade/lang";
 
 export interface GridDragEvent {
     grid:NgGridComponent,
@@ -62,14 +64,19 @@ export class GridDragService {
             if (grid.items.map(item => item.id).includes(id)) {
                 grid.removeItemById(id);
                 this.removing = false;
+                this.getPlacedItems()
+                    .filter(item => isArray(item.component.data.items))
+                    .forEach((it, i, arr) => {
+                        arr[i].component.data.items = grid.items;
+                    });
             }
-        })
+        });
     }
 
     public getPlacedItems() {
-        return this.grids
-            .map(grid => grid.items)
-            .reduce((allItems, items) => allItems.concat(items));
+        return this.grids[0].items;
+            // .map(grid => grid.items)
+            // .reduce((allItems, items) => allItems.concat(items));
     }
 
     public registerGrid(grid:NgGridComponent) {
@@ -102,6 +109,13 @@ export class GridDragService {
             this.initialGrid.removeItem(v.oldConfig);
             this.draggedItem = undefined;
             this.initialGrid = undefined;
+            this.getPlacedItems()
+                .filter(item => isArray(item.component.data.items))
+                .forEach((it, i, arr) => {
+                    // console.log(arr[i]);
+                    arr[i].component.data.items = grid.items.concat(v.newConfig);//[v.newConfig].concat(arr[i].component.data.items).filter((item, ind, itms) => itms.map(i => i.id).indexOf(item.id) == ind);
+                });
+            // console.log('added', v)
             grid.addItem(v.newConfig);
             this.itemAdded$.next(this.getPlacedItems());
         });

@@ -92,6 +92,7 @@ export class NgGrid implements OnInit, DoCheck {
 
     //	Default config
     private static CONST_DEFAULT_CONFIG:NgGridConfig = {
+        id: '',
         margins: [10],
         draggable: true,
         resizable: true,
@@ -112,7 +113,7 @@ export class NgGrid implements OnInit, DoCheck {
         width: '100%',
         height: '100%'
     };
-    private _config = NgGrid.CONST_DEFAULT_CONFIG;
+    public _config = NgGrid.CONST_DEFAULT_CONFIG;
 
 
     constructor(private _differs:KeyValueDiffers,
@@ -1054,15 +1055,19 @@ export class NgGrid implements OnInit, DoCheck {
     public injectItem(component, element, componentData) {
         return this.cmpResolver.resolveComponent(component)
             .then((factory:ComponentFactory) => {
-                setTimeout(() => {
                     const ref:ComponentRef = factory.create(this.viewContainer.injector, undefined, element);
-                    // Object.keys(componentData).forEach(key => {
-                    //     ref.instance[key] = componentData[key];
-                    // });
                     Object.assign(ref.instance, componentData);
                     this.appRef._loadComponent(ref);
-                });
+                // console.log(containerRef);
+                //
+                //         return containerRef.createComponent(
+                //             factory, containerRef.length, containerRef.parentInjector
+                //         );
 
-            });
+            })
+            // .then(ref => {
+            //     Object.assign(ref.instance, componentData);
+            //     this.appRef._loadComponent(ref);
+            // })
     }
 }

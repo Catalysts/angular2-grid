@@ -8,7 +8,7 @@ import {
     OnInit,
     OnDestroy,
     ViewContainerRef,
-    Output
+    Output, ViewChild, Component
 } from '@angular/core';
 import {GridDragService} from '../../service/GridDragService';
 import {GridPositionService} from '../../service/GridPositionService';
@@ -18,16 +18,24 @@ import {NgGrid} from '../ng-grid/NgGrid';
 import {UUID} from 'angular2-uuid';
 import {Subject} from "rxjs/Rx";
 
-@Directive({
+@Component({
     selector: '[ngGridItem]',
+    template: `
+        <div>
+            <div #child></div>
+        </div>
+    `,
     inputs: ['config: ngGridItem'],
     host: {
+        '(mouseover)': 'onMouseOver($event)'
         // '(mousedown)': '_onMouseDown($event)',
         // '(document:mousemove)': '_onMouseMoveWindow($event)',
         // '(document:mouseup)': '_onMouseUp($event)',
     }
 })
 export class NgGridItem implements OnInit, OnDestroy {
+    @ViewChild('child', { read: ViewContainerRef })
+    public childRef:ViewContainerRef;
     //	Event Emitters
     @Output() public onItemChange:EventEmitter<NgGridItemEvent> = new EventEmitter<NgGridItemEvent>(false);
     @Output() public onDragStart:EventEmitter<NgGridItemEvent> = new EventEmitter<NgGridItemEvent>();
@@ -64,7 +72,7 @@ export class NgGridItem implements OnInit, OnDestroy {
     public isResizable:boolean = true;
 
     //	Private variables
-    public id:string = UUID.UUID();
+    // public id:string = UUID.UUID();
     private _col:number = 1;
     private _row:number = 1;
     private _sizex:number = 1;
@@ -125,6 +133,15 @@ export class NgGridItem implements OnInit, OnDestroy {
     //     //     // this._ngEl.nativeElement.style.transform = `translate(${diff.x}px, ${diff.y}px)`;
     //     // }
     // }
+
+    private onMouseOver(e) {
+        // console.log(e.target);
+        // if (e.target != this._ngEl.nativeElement) {
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //     return false;
+        // }
+    }
 
     public ngOnInit():void {
         this._renderer.setElementClass(this._ngEl.nativeElement, 'grid-item', true);

@@ -18,6 +18,7 @@ import {
 import {Subject} from "rxjs/Rx";
 import {NgGridItemConfig} from "../ng-grid-item/NgGridItemConfig";
 import {GridPositionService} from "../../service/GridPositionService";
+import {UUID} from "angular2-uuid/index";
 
 @Component({
     selector: 'ngGrid',
@@ -32,13 +33,12 @@ import {GridPositionService} from "../../service/GridPositionService";
     template: `
         <div [ngGrid]="config">
             <div [ngGridItem]="item"
-                 *ngFor="let item of items; let i = index"
-                 id="gridItem_{{i}}">
+                 *ngFor="let item of items">
             </div>
         </div>
     `,
     host: {
-        '(mousemove)': 'mouseMove$.next(toObserverEvent($event))',
+        '(mousemove)': 'mouseMove($event)',
         '(mousedown)': 'mouseDown($event)',
         '(mouseup)': 'mouseUp($event)',
         '(dragover)': 'dragOver($event)',
@@ -50,7 +50,7 @@ export class NgGridComponent implements OnInit {
     public ngGrid:NgGrid;
 
     @ViewChildren(NgGridItem)
-    public gridItems: QueryList<NgGridItem>;
+    public gridItems:QueryList<NgGridItem>;
 
     @Input()
     public items:NgGridItemConfig[] = [];
@@ -58,7 +58,10 @@ export class NgGridComponent implements OnInit {
     public mouseMove$:Subject<any> = new Subject();
     public newItemAdd$:Subject<any> = new Subject();
 
-    constructor(private gridDragService:GridDragService,
+    private data:any = {};
+
+    constructor(private ngEl:ElementRef,
+                private gridDragService:GridDragService,
                 private gridPositionService:GridPositionService) {
     }
 
@@ -71,12 +74,26 @@ export class NgGridComponent implements OnInit {
         setTimeout(() => this.injectItems(), 100);
     }
 
+    private mouseMove(e) {
+        // console.log(`dragged in: ${this.items.length}`, e.target.parentNode == this.ngGrid._ngEl.nativeElement);
+        // if (e.target.parentNode != this.ngEl.nativeElement) {
+        //     if (this.gridDragService.draggedItem) {
+        //         // console.log(e.target, this.items.length, this.ngEl.nativeElement);
+        //     }
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //     return false;
+        // } else {
+            this.mouseMove$.next(this.toObserverEvent(e));
+        // }
+    }
+
     public itemDraggedInside(v) {
         if (this.gridDragService.draggedItem) {
             const {item, event} = v.itemDragged;
+
             const conf = this.itemConfigFromEvent(item.config, event.event);
             const dims = item.getSize();
-            this.ngGrid._placeholderRef.instance.setGridPosition(conf.col, conf.row);
             if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.itemDragged.item)
                 && !this.hasCollisions(conf, v.itemDragged.item.config)) {
                 this.ngGrid._placeholderRef.instance.makeValid();
@@ -84,6 +101,7 @@ export class NgGridComponent implements OnInit {
                 this.ngGrid._placeholderRef.instance.makeInvalid();
             }
             this.ngGrid._placeholderRef.instance.setSize(dims.x, dims.y);
+            this.ngGrid._placeholderRef.instance.setGridPosition(conf.col, conf.row);
         }
     }
 
@@ -99,7 +117,7 @@ export class NgGridComponent implements OnInit {
             this.newItemAdd$.next({
                 grid: this,
                 newConfig: conf,
-                oldConfig:v.release.item.config,
+                oldConfig: v.release.item.config,
                 event: v.release.event
             });
         }
@@ -197,6 +215,9 @@ export class NgGridComponent implements OnInit {
         if (i && i.canDrag(e)) {
             this.gridDragService.dragStart(i, this, e);
         }
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
     }
 
     private mouseUp(e:MouseEvent) {
@@ -212,7 +233,10 @@ export class NgGridComponent implements OnInit {
 
     private injectItems():void {
         if (this.gridItems) {
-            this.gridItems.forEach((item, index) => this.ngGrid.injectItem(item.config.component.type, item._ngEl.nativeElement, item.config.component.data));
+            this.gridItems.forEach((item) => {
+                // console.log(item.childRef);
+                this.ngGrid.injectItem(item.config.component.type, item._ngEl.nativeElement, item.config.component.data)
+            });
         }
     }
 }

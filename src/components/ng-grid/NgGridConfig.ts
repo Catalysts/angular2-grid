@@ -1,4 +1,5 @@
 export interface NgGridConfig {
+    id:string,
     margins?:number[];
     draggable?:boolean;
     resizable?:boolean;
