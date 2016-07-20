@@ -64,19 +64,13 @@ export class GridDragService {
             if (grid.items.map(item => item.id).includes(id)) {
                 grid.removeItemById(id);
                 this.removing = false;
-                this.getPlacedItems()
-                    .filter(item => isArray(item.component.data.items))
-                    .forEach((it, i, arr) => {
-                        arr[i].component.data.items = grid.items;
-                    });
+                this.changeSubgridItemsConfig(grid.ngGrid._config.id, grid.items);
             }
         });
     }
 
     public getPlacedItems() {
         return this.grids[0].items;
-            // .map(grid => grid.items)
-            // .reduce((allItems, items) => allItems.concat(items));
     }
 
     public registerGrid(grid:NgGridComponent) {
@@ -106,16 +100,13 @@ export class GridDragService {
             });
 
         grid.newItemAdd$.subscribe(v => {
-            this.initialGrid.removeItem(v.oldConfig);
+            if (this.initialGrid) {
+                this.initialGrid.removeItem(v.oldConfig);
+                this.changeSubgridItemsConfig(this.initialGrid.ngGrid._config.id, this.initialGrid.items);
+            }
             this.draggedItem = undefined;
             this.initialGrid = undefined;
-            this.getPlacedItems()
-                .filter(item => isArray(item.component.data.items))
-                .forEach((it, i, arr) => {
-                    // console.log(arr[i]);
-                    arr[i].component.data.items = grid.items.concat(v.newConfig);//[v.newConfig].concat(arr[i].component.data.items).filter((item, ind, itms) => itms.map(i => i.id).indexOf(item.id) == ind);
-                });
-            // console.log('added', v)
+            this.changeSubgridItemsConfig(grid.ngGrid._config.id, grid.items.concat(v.newConfig));
             grid.addItem(v.newConfig);
             this.itemAdded$.next(this.getPlacedItems());
         });
@@ -126,6 +117,15 @@ export class GridDragService {
             outside,
             release
         };
+    }
+
+    private changeSubgridItemsConfig(id:string, items:NgGridItemConfig[]) {
+        const placedItems = this.getPlacedItems();
+        const subgridIndex = placedItems
+            .findIndex(item => item.id === id && isArray(item.component.data.items));
+        if (subgridIndex > -1) {
+            placedItems[subgridIndex].component.data.items = items;
+        }
     }
 
     public mouseMove(event) {

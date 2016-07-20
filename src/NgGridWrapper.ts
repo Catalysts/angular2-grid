@@ -2,16 +2,12 @@
  * Created by tudorgergely on 5/24/16.
  */
 import {
-    Component,
+    Component, Input,
 } from '@angular/core';
 import {NgGridComponent} from "./components/ng-grid/NgGridComponent";
 
 @Component({
     selector: 'ngGridWrapper',
-    inputs: [
-        'items: items',
-        'config: config',
-    ],
     directives: [
         NgGridComponent
     ],
@@ -20,5 +16,8 @@ import {NgGridComponent} from "./components/ng-grid/NgGridComponent";
     `,
 })
 export class NgGridWrapper {
-    public items, config;
+    @Input()
+    public items;
+    @Input()
+    public config;
 }

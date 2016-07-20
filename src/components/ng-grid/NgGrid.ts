@@ -1058,16 +1058,6 @@ export class NgGrid implements OnInit, DoCheck {
                     const ref:ComponentRef = factory.create(this.viewContainer.injector, undefined, element);
                     Object.assign(ref.instance, componentData);
                     this.appRef._loadComponent(ref);
-                // console.log(containerRef);
-                //
-                //         return containerRef.createComponent(
-                //             factory, containerRef.length, containerRef.parentInjector
-                //         );
-
-            })
-            // .then(ref => {
-            //     Object.assign(ref.instance, componentData);
-            //     this.appRef._loadComponent(ref);
-            // })
+            });
     }
 }

@@ -114,19 +114,19 @@ class MyAppComponent extends OnInit {
             sizey: 2,
             component: {
                 type: TestComponent, data: {
-                    id: (Math.random() * 100) % 100,
+                    id: '6',
                 }
             },
         },
         {
-            id: '6',
+            id: '8',
             col: 1,
             row: 12,
             sizex: 16,
             sizey: 2,
             component: {
                 type: TestComponent, data: {
-                    id: (Math.random() * 100) % 100,
+                    id: '8',
                 }
             },
         },
@@ -164,6 +164,7 @@ class MyAppComponent extends OnInit {
         },
     ];
     private draggable:NgGridItemConfig = {
+        id: '23',
         col: 9,
         row: 9,
         sizex: 12,
@@ -172,7 +173,7 @@ class MyAppComponent extends OnInit {
             type: NgGridWrapper,
             data: {
                 config: {
-                    'id': UUID.UUID(),
+                    'id': '23',
                     'margins': [5],
                     'draggable': true,
                     'resizable': false,

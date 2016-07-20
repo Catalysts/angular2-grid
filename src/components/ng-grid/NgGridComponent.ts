@@ -75,17 +75,7 @@ export class NgGridComponent implements OnInit {
     }
 
     private mouseMove(e) {
-        // console.log(`dragged in: ${this.items.length}`, e.target.parentNode == this.ngGrid._ngEl.nativeElement);
-        // if (e.target.parentNode != this.ngEl.nativeElement) {
-        //     if (this.gridDragService.draggedItem) {
-        //         // console.log(e.target, this.items.length, this.ngEl.nativeElement);
-        //     }
-        //     e.preventDefault();
-        //     e.stopPropagation();
-        //     return false;
-        // } else {
-            this.mouseMove$.next(this.toObserverEvent(e));
-        // }
+        this.mouseMove$.next(this.toObserverEvent(e));
     }
 
     public itemDraggedInside(v) {
@@ -180,7 +170,12 @@ export class NgGridComponent implements OnInit {
             const conf = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
             if (this.gridPositionService.validateGridPosition(conf.col, conf.row, content)
                 && !this.hasCollisions(conf, content)) {
-                this.addItem(Object.assign(content, conf));
+                const itemConfig = Object.assign(content, conf);
+                this.newItemAdd$.next({
+                    grid: this,
+                    newConfig: itemConfig,
+                    event: e
+                });
             }
         }
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
@@ -234,7 +229,6 @@ export class NgGridComponent implements OnInit {
     private injectItems():void {
         if (this.gridItems) {
             this.gridItems.forEach((item) => {
-                // console.log(item.childRef);
                 this.ngGrid.injectItem(item.config.component.type, item._ngEl.nativeElement, item.config.component.data)
             });
         }

@@ -11,7 +11,7 @@ class GridPlaceholderService implements OnInit {
 
     public showPlaceholder(item:NgGridItem, position:{col:number, row:number}) {
         this.placeholder.registerGrid(item._ngGrid);
-        this.placeholder.setGridPosition(position.col, position.row, item);
+        this.placeholder.setGridPosition(position.col, position.row);
         this.placeholder.setSize(item.getDimensions().width, item.getDimensions().height);
     }
 
