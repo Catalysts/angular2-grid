@@ -51,8 +51,6 @@ class MyAppComponent extends OnInit {
         'autoResize': false,
         'maintainRatio': false,
         'preferNew': true,
-        'width': 1000,
-        'height': 1000,
     };
     private items:NgGridItemConfig[] = [
         {
@@ -131,38 +129,6 @@ class MyAppComponent extends OnInit {
             },
         },
     ];
-    private items2:NgGridItemConfig[] = [
-        {
-            id: '7',
-            col: 1,
-            row: 1,
-            sizex: 4,
-            sizey: 2,
-            component: {
-                type: TestComponent, data: {
-                    id: '7'
-                }
-            },
-        }, {
-            col: 1,
-            row: 4,
-            sizex: 4,
-            sizey: 2,
-            component: {type: TestComponent, data: {}},
-        }, {
-            col: 9,
-            row: 1,
-            sizex: 4,
-            sizey: 2,
-            component: {type: TestComponent, data: {}},
-        }, {
-            col: 1,
-            row: 6,
-            sizex: 4,
-            sizey: 2,
-            component: {type: TestComponent, data: {}},
-        },
-    ];
     private draggable:NgGridItemConfig = {
         id: '23',
         col: 9,
@@ -183,18 +149,16 @@ class MyAppComponent extends OnInit {
                     'visibleRows': 0,
                     'minCols': 1,
                     'minRows': 1,
-                    'colWidth': 50,
-                    'rowHeight': 50,
+                    'colWidth': 20,
+                    'rowHeight': 20,
                     'cascade': 'off',
-                    'minWidth': 50,
-                    'minHeight': 50,
+                    // 'minWidth': 50,
+                    // 'minHeight': 50,
                     'fixToGrid': false,
                     'autoStyle': true,
                     'autoResize': false,
                     'maintainRatio': false,
                     'preferNew': true,
-                    'width': 600,
-                    'height': 400,
                 },
                 items: [],
             }

@@ -45,7 +45,7 @@ import {UUID} from "angular2-uuid/index";
         '(drop)': 'drop($event)',
     },
 })
-export class NgGridComponent implements OnInit {
+export class NgGridComponent implements OnInit, OnChanges {
     @ViewChild(NgGrid)
     public ngGrid:NgGrid;
 
@@ -71,6 +71,10 @@ export class NgGridComponent implements OnInit {
         outside.subscribe(v => this.itemDragOutside(v));
         release.subscribe(v => this.itemReleased(v));
 
+        setTimeout(() => this.injectItems(), 100);
+    }
+
+    ngOnChanges():void {
         setTimeout(() => this.injectItems(), 100);
     }
 
@@ -151,7 +155,9 @@ export class NgGridComponent implements OnInit {
             x: item.sizex,
             y: item.sizey
         };
-        const conf = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
+        const conf:NgGridItemConfig = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
+        conf.sizex = dims.x;
+        conf.sizey = dims.y;
         this.ngGrid._placeholderRef.instance.setGridPosition(conf.col, conf.row);
         if (this.gridPositionService.validateGridPosition(conf.col, conf.row, item)
             && !this.hasCollisions(conf, item)) {
@@ -167,7 +173,9 @@ export class NgGridComponent implements OnInit {
         const content = this.gridDragService.dragItemConf;
         this.gridDragService.dragItemConf = null;
         if (content) {
-            const conf = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
+            const conf:NgGridItemConfig = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
+            conf.sizex = content.sizex;
+            conf.sizey = content.sizey;
             if (this.gridPositionService.validateGridPosition(conf.col, conf.row, content)
                 && !this.hasCollisions(conf, content)) {
                 const itemConfig = Object.assign(content, conf);
@@ -202,7 +210,7 @@ export class NgGridComponent implements OnInit {
         setTimeout(() => {
             const element = this.gridItems.last._ngEl.nativeElement;
             this.ngGrid.injectItem(item.component.type, element, item.component.data);
-        }, 20);
+        }, 50);
     }
 
     private mouseDown(e) {

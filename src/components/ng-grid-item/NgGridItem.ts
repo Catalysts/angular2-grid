@@ -56,7 +56,7 @@ export class NgGridItem implements OnInit, OnDestroy {
 
     //	Default config
     private static CONST_DEFAULT_CONFIG:NgGridItemConfig = {
-        id: UUID.UUID(),
+        // id: UUID.UUID(),
         col: 1,
         row: 1,
         sizex: 1,
@@ -413,8 +413,8 @@ export class NgGridItem implements OnInit, OnDestroy {
     }
 
     private _recalculateDimensions():void {
-        if (this._sizex < this._ngGrid.minCols) this._sizex = this._ngGrid.minCols;
-        if (this._sizey < this._ngGrid.minRows) this._sizey = this._ngGrid.minRows;
+        // if (this._sizex < this._ngGrid.minCols) this._sizex = this._ngGrid.minCols;
+        // if (this._sizey < this._ngGrid.minRows) this._sizey = this._ngGrid.minRows;
 
         var newWidth = Math.max(this._ngGrid.minWidth, this._ngGrid.colWidth) * this._sizex;
         var newHeight = Math.max(this._ngGrid.minHeight, this._ngGrid.rowHeight) * this._sizey;
@@ -422,6 +422,7 @@ export class NgGridItem implements OnInit, OnDestroy {
         var w = newWidth + ((this._ngGrid.marginLeft + this._ngGrid.marginRight) * (this._sizex - 1));
         var h = newHeight + ((this._ngGrid.marginTop + this._ngGrid.marginBottom) * (this._sizey - 1));
 
+        // console.log(w,h);
         this.setDimensions(w, h);
     }
 

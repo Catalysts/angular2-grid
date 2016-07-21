@@ -103,8 +103,8 @@ export class NgGrid implements OnInit, DoCheck {
         colWidth: 250,
         rowHeight: 250,
         cascade: 'up',
-        minWidth: 100,
-        minHeight: 100,
+        minWidth: 0,
+        minHeight: 0,
         fixToGrid: false,
         autoStyle: true,
         autoResize: false,
@@ -191,8 +191,8 @@ export class NgGrid implements OnInit, DoCheck {
             this.rearrangeItems();
         }
 
-        this._calculateRowHeight();
-        this._calculateColWidth();
+        // this._calculateRowHeight();
+        // this._calculateColWidth();
 
         var maxWidth = this._maxCols * this.colWidth;
         var maxHeight = this._maxRows * this.rowHeight;
@@ -206,7 +206,7 @@ export class NgGrid implements OnInit, DoCheck {
         if (this._maxCols > 0 && this.minCols > this._maxCols) this.minCols = 1;
         if (this._maxRows > 0 && this.minRows > this._maxRows) this.minRows = 1;
 
-        this._updateRatio();
+        // this._updateRatio();
 
         this._items.forEach(item => {
             this._removeFromGrid(item);
@@ -217,8 +217,10 @@ export class NgGrid implements OnInit, DoCheck {
         this._cascadeGrid();
         this._updateSize();
 
-        const width = config.width ? config.width + 'px' : NgGrid.CONST_DEFAULT_CONFIG.width;
-        const height = config.height ? config.height + 'px' : NgGrid.CONST_DEFAULT_CONFIG.height;
+        const width = config.colWidth * config.maxCols + 'px';
+        const height = config.rowHeight * config.maxRows + 'px';
+
+        // console.log(this._config);
 
         this.setSize(width, height);
     }
