@@ -18,7 +18,6 @@ import {
 import {Subject} from "rxjs/Rx";
 import {NgGridItemConfig} from "../ng-grid-item/NgGridItemConfig";
 import {GridPositionService} from "../../service/GridPositionService";
-import {UUID} from "angular2-uuid/index";
 
 @Component({
     selector: 'ngGrid',
@@ -89,7 +88,7 @@ export class NgGridComponent implements OnInit, OnChanges {
 
             const conf = this.itemConfigFromEvent(item.config, event.event);
             const dims = item.getSize();
-            if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.itemDragged.item)
+            if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.itemDragged.item, this.ngGrid._config)
                 && !this.hasCollisions(conf, v.itemDragged.item.config)) {
                 this.ngGrid._placeholderRef.instance.makeValid();
             } else {
@@ -107,7 +106,7 @@ export class NgGridComponent implements OnInit, OnChanges {
     public itemReleased(v) {
         const conf = this.itemConfigFromEvent(v.release.item.config, v.move.event);
 
-        if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.release.item)
+        if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.release.item, this.ngGrid._config)
             && !this.hasCollisions(conf, v.release.item.config)) {
             this.newItemAdd$.next({
                 grid: this,
@@ -160,7 +159,7 @@ export class NgGridComponent implements OnInit, OnChanges {
         conf.sizex = dims.x;
         conf.sizey = dims.y;
         this.ngGrid._placeholderRef.instance.setGridPosition(conf.col, conf.row);
-        if (this.gridPositionService.validateGridPosition(conf.col, conf.row, item)
+        if (this.gridPositionService.validateGridPosition(conf.col, conf.row, item, this.ngGrid._config)
             && !this.hasCollisions(conf, item)) {
             this.ngGrid._placeholderRef.instance.makeValid();
         } else {
@@ -181,7 +180,7 @@ export class NgGridComponent implements OnInit, OnChanges {
             const conf:NgGridItemConfig = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
             conf.sizex = content.sizex;
             conf.sizey = content.sizey;
-            if (this.gridPositionService.validateGridPosition(conf.col, conf.row, content)
+            if (this.gridPositionService.validateGridPosition(conf.col, conf.row, content, this.ngGrid._config)
                 && !this.hasCollisions(conf, content)) {
                 const itemConfig = Object.assign(content, conf);
                 this.newItemAdd$.next({
