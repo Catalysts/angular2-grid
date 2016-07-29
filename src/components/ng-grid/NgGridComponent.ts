@@ -43,6 +43,7 @@ import {UUID} from "angular2-uuid/index";
         '(mouseup)': 'mouseUp($event)',
         '(dragover)': 'dragOver($event)',
         '(drop)': 'drop($event)',
+        '(dragleave)': 'dragLeave($event)',
     },
 })
 export class NgGridComponent implements OnInit, OnChanges {
@@ -167,6 +168,10 @@ export class NgGridComponent implements OnInit, OnChanges {
         }
         this.ngGrid._placeholderRef.instance.setSize(dims.x, dims.y);
         e.preventDefault();
+    }
+
+    private dragLeave(e) {
+        this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
 
     private drop(e) {
