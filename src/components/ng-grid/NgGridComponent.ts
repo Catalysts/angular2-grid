@@ -58,6 +58,8 @@ export class NgGridComponent implements OnInit, OnChanges {
     public mouseMove$:Subject<any> = new Subject();
     public newItemAdd$:Subject<any> = new Subject();
 
+    static GRID_POSITIONS_OFFSET = 1;
+
     private data:any = {};
 
     constructor(private ngEl:ElementRef,
@@ -89,7 +91,11 @@ export class NgGridComponent implements OnInit, OnChanges {
             const conf = this.itemConfigFromEvent(item.config, event.event);
             const dims = item.getSize();
             if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.itemDragged.item, this.ngGrid._config)
-                && !this.hasCollisions(conf, v.itemDragged.item.config)) {
+                && !this.hasCollisions(conf, v.itemDragged.item.config)
+                && !this.isOutsideGrid(conf, {
+                    columns: this.ngGrid._config.maxCols,
+                    rows: this.ngGrid._config.maxRows
+                })) {
                 this.ngGrid._placeholderRef.instance.makeValid();
             } else {
                 this.ngGrid._placeholderRef.instance.makeInvalid();
@@ -107,7 +113,8 @@ export class NgGridComponent implements OnInit, OnChanges {
         const conf = this.itemConfigFromEvent(v.release.item.config, v.move.event);
 
         if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.release.item, this.ngGrid._config)
-            && !this.hasCollisions(conf, v.release.item.config)) {
+            && !this.hasCollisions(conf, v.release.item.config)
+            && !this.isOutsideGrid(conf, {columns: this.ngGrid._config.maxCols, rows: this.ngGrid._config.maxRows})) {
             this.newItemAdd$.next({
                 grid: this,
                 newConfig: conf,
@@ -148,6 +155,13 @@ export class NgGridComponent implements OnInit, OnChanges {
         }
     }
 
+    private isOutsideGrid(item:NgGridItemConfig, gridSize:any):boolean {
+        const {col, row} = item;
+        const {sizex, sizey} = item;
+        return (col + sizex - NgGridComponent.GRID_POSITIONS_OFFSET > gridSize.columns)
+            || (row + sizey - NgGridComponent.GRID_POSITIONS_OFFSET > gridSize.rows);
+    }
+
     private dragOver(e) {
         const item = this.gridDragService.dragItemConf;
         if (!item) return;
@@ -160,7 +174,8 @@ export class NgGridComponent implements OnInit, OnChanges {
         conf.sizey = dims.y;
         this.ngGrid._placeholderRef.instance.setGridPosition(conf.col, conf.row);
         if (this.gridPositionService.validateGridPosition(conf.col, conf.row, item, this.ngGrid._config)
-            && !this.hasCollisions(conf, item)) {
+            && !this.hasCollisions(conf, item)
+            && !this.isOutsideGrid(conf, {columns: this.ngGrid._config.maxCols, rows: this.ngGrid._config.maxRows})) {
             this.ngGrid._placeholderRef.instance.makeValid();
         } else {
             this.ngGrid._placeholderRef.instance.makeInvalid();
@@ -181,7 +196,11 @@ export class NgGridComponent implements OnInit, OnChanges {
             conf.sizex = content.sizex;
             conf.sizey = content.sizey;
             if (this.gridPositionService.validateGridPosition(conf.col, conf.row, content, this.ngGrid._config)
-                && !this.hasCollisions(conf, content)) {
+                && !this.hasCollisions(conf, content)
+                && !this.isOutsideGrid(conf, {
+                    columns: this.ngGrid._config.maxCols,
+                    rows: this.ngGrid._config.maxRows
+                })) {
                 const itemConfig = Object.assign(content, conf);
                 this.newItemAdd$.next({
                     grid: this,

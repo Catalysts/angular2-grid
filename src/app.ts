@@ -32,7 +32,7 @@ class MyAppComponent extends OnInit {
 
     private gridConfig = <NgGridConfig>{
         'id': UUID.UUID(),
-        'margins': [5],
+        'margins': [0],
         'draggable': true,
         'resizable': false,
         'maxCols': 16,
