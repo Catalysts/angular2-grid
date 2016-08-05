@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 
 import {NgGrid} from './NgGrid';
-import {GridPositionService} from '../../service/GridPositionService';
+import {GridValidationService} from '../../service/GridPositionService';
 import {NgGridItem} from "../ng-grid-item/NgGridItem";
 
 @Component({
@@ -23,7 +23,7 @@ export class NgGridPlaceholder implements OnInit {
 
     constructor(private _ngEl:ElementRef,
                 private _renderer:Renderer,
-                private gridPositionService:GridPositionService) {
+                private gridPositionService:GridValidationService) {
     }
 
     public registerGrid(ngGrid:NgGrid) {

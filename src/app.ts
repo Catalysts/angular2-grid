@@ -6,7 +6,7 @@ import {
     NgGridConfig,
     NgGridComponent,
     NgGridItem,
-    GridPositionService,
+    GridValidationService,
     NgGridItemConfig,
     NgGridDraggable,
     GridDragService,
@@ -20,7 +20,7 @@ import {UUID} from "angular2-uuid/index";
     selector: 'my-app',
     templateUrl: 'app.html',
     styleUrls: ['app.css', 'NgGrid.css', 'NgGrid_FixSmall.css'],
-    providers: [GridPositionService, GridDragService],
+    providers: [GridValidationService, GridDragService],
     directives: [CORE_DIRECTIVES, NgGrid, NgGridItem, FORM_DIRECTIVES, NgGridDraggable, NgGridComponent, TestComponent],
     encapsulation: ViewEncapsulation.None
 })
@@ -165,8 +165,8 @@ class MyAppComponent extends OnInit {
         }
     };
 
-    constructor(private gridPositionService:GridPositionService, private gridDragService:GridDragService) {
-        this.gridPositionService.addCondition(this.validatePosition);
+    constructor(private gridPositionService:GridValidationService, private gridDragService:GridDragService) {
+        this.gridPositionService.addPositionCondition(this.validatePosition);
     }
 
     ngOnInit() {

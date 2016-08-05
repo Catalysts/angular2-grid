@@ -14,8 +14,8 @@ import {GridDragService} from "../../service/GridDragService";
 export class NgGridDraggable {
     private content:any;
 
-    constructor(private el:ElementRef, private gridDragService:GridDragService) {
-        this.el.nativeElement.draggable = "true";
+    constructor(private elementRef:ElementRef, private gridDragService:GridDragService) {
+        this.elementRef.nativeElement.draggable = "true";
     }
 
     private dragStart(e: any):void {

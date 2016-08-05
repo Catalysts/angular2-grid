@@ -7,16 +7,39 @@ export interface ConditionFn {
 }
 
 @Injectable()
-export class GridPositionService {
-    private conditions:ConditionFn[] = [];
+export class GridValidationService {
+    private positionConditions:ConditionFn[] = [];
+    private resizeConditions:ConditionFn[] = [];
 
-    addCondition(condition:ConditionFn) {
-        this.conditions.push(condition);
+    addPositionCondition(condition:ConditionFn) {
+        this.positionConditions.push(condition);
     }
 
-    validateGridPosition(gridX:number, gridY:number, gridItem:NgGridItemConfig, hoveredGrid:NgGridConfig):boolean {
-        return this.conditions
+    addResizeCondition(condition:ConditionFn) {
+        this.resizeConditions.push(condition);
+    }
+
+    validateConditions(gridX:number,
+                       gridY:number,
+                       gridItem:NgGridItemConfig,
+                       hoveredGrid:NgGridConfig,
+                       conditions:ConditionFn[]):boolean {
+        return conditions
             .map(condition => condition(gridX, gridY, gridItem, hoveredGrid))
             .reduce((a, b) => a && b, true);
+    }
+
+    validateGridPosition(gridX:number,
+                         gridY:number,
+                         gridItem:NgGridItemConfig,
+                         hoveredGrid:NgGridConfig):boolean {
+        return this.validateConditions(gridX, gridY, gridItem, hoveredGrid, this.positionConditions);
+    }
+
+    validateResize(gridX:number,
+                   gridY:number,
+                   gridItem:NgGridItemConfig,
+                   hoveredGrid:NgGridConfig):boolean {
+        return this.validateConditions(gridX, gridY, gridItem, hoveredGrid, this.resizeConditions);
     }
 }

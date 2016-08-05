@@ -2,7 +2,7 @@
  * Created by tudorgergely on 5/24/16.
  */
 import {
-    Component, Input, ChangeDetectorRef, OnInit,
+    Component, Input, ChangeDetectorRef, OnInit, OnDestroy,
 } from '@angular/core';
 import {GridDragService} from "./service/GridDragService";
 
@@ -14,7 +14,7 @@ import {GridDragService} from "./service/GridDragService";
         </div>
     `,
 })
-export class TestComponent implements OnInit {
+export class TestComponent implements OnInit, OnDestroy {
     name:string = 'aa';
     id:string;
 
@@ -24,6 +24,10 @@ export class TestComponent implements OnInit {
 
     ngOnInit() {
         this.changeDetectorRef.detectChanges();
+    }
+
+    ngOnDestroy() {
+        console.log('destroyed');
     }
 
     clickButton(e) {

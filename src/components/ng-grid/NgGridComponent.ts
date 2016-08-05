@@ -3,7 +3,8 @@ import {
     OnInit,
     OnChanges,
     Input,
-    ViewChild, ComponentFactory, ElementRef, ViewChildren, QueryList,
+    ViewChild, ComponentFactory, ElementRef, ViewChildren, QueryList, OnDestroy, HostBinding,
+    HostListener,
 } from '@angular/core';
 
 import {
@@ -17,18 +18,11 @@ import {
 } from './NgGrid';
 import {Subject} from "rxjs/Rx";
 import {NgGridItemConfig} from "../ng-grid-item/NgGridItemConfig";
-import {GridPositionService} from "../../service/GridPositionService";
+import {GridValidationService} from "../../service/GridPositionService";
+import {NgGridConfig} from "./NgGridConfig";
 
 @Component({
     selector: 'ngGrid',
-    inputs: [
-        'items: items',
-        'config: config',
-    ],
-    directives: [
-        NgGridItem,
-        NgGrid,
-    ],
     template: `
         <div [ngGrid]="config">
             <div [ngGridItem]="item"
@@ -36,21 +30,17 @@ import {GridPositionService} from "../../service/GridPositionService";
             </div>
         </div>
     `,
-    host: {
-        '(mousemove)': 'mouseMove($event)',
-        '(mousedown)': 'mouseDown($event)',
-        '(mouseup)': 'mouseUp($event)',
-        '(dragover)': 'dragOver($event)',
-        '(drop)': 'drop($event)',
-        '(dragleave)': 'dragLeave($event)',
-    },
+    directives: [
+        NgGridItem,
+        NgGrid,
+    ],
 })
-export class NgGridComponent implements OnInit, OnChanges {
+export class NgGridComponent implements OnInit, OnDestroy {
     @ViewChild(NgGrid)
     public ngGrid:NgGrid;
 
-    @ViewChildren(NgGridItem)
-    public gridItems:QueryList<NgGridItem>;
+    @Input()
+    private config:NgGridConfig;
 
     @Input()
     public items:NgGridItemConfig[] = [];
@@ -60,11 +50,8 @@ export class NgGridComponent implements OnInit, OnChanges {
 
     static GRID_POSITIONS_OFFSET = 1;
 
-    private data:any = {};
-
-    constructor(private ngEl:ElementRef,
-                private gridDragService:GridDragService,
-                private gridPositionService:GridPositionService) {
+    constructor(private gridDragService:GridDragService,
+                private gridPositionService:GridValidationService) {
     }
 
     ngOnInit() {
@@ -72,14 +59,13 @@ export class NgGridComponent implements OnInit, OnChanges {
         inside.subscribe(v => this.itemDraggedInside(v));
         outside.subscribe(v => this.itemDragOutside(v));
         release.subscribe(v => this.itemReleased(v));
-
-        setTimeout(() => this.injectItems(), 100);
     }
 
-    ngOnChanges():void {
-        setTimeout(() => this.injectItems(), 100);
+    ngOnDestroy():any {
+        this.ngGrid._items.forEach(item => item.ngOnDestroy())
     }
 
+    @HostListener('mousemove', ['$event'])
     private mouseMove(e) {
         this.mouseMove$.next(this.toObserverEvent(e));
     }
@@ -162,6 +148,7 @@ export class NgGridComponent implements OnInit, OnChanges {
             || (row + sizey - NgGridComponent.GRID_POSITIONS_OFFSET > gridSize.rows);
     }
 
+    @HostListener('dragover', ['$event'])
     private dragOver(e) {
         const item = this.gridDragService.dragItemConf;
         if (!item) return;
@@ -184,10 +171,12 @@ export class NgGridComponent implements OnInit, OnChanges {
         e.preventDefault();
     }
 
+    @HostListener('dragleave', ['$event'])
     private dragLeave(e) {
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
 
+    @HostListener('drop', ['$event'])
     private drop(e) {
         const content = this.gridDragService.dragItemConf;
         this.gridDragService.dragItemConf = null;
@@ -230,12 +219,9 @@ export class NgGridComponent implements OnInit, OnChanges {
 
     public addItem(item:NgGridItemConfig) {
         this.items = this.items.concat([item]);
-        setTimeout(() => {
-            const element = this.gridItems.last._ngEl.nativeElement;
-            this.ngGrid.injectItem(item.component.type, element, item.component.data);
-        }, 50);
     }
 
+    @HostListener('mousedown', ['$event'])
     private mouseDown(e) {
         const i = this.ngGrid.getItem(e);
         if (i && i.canDrag(e)) {
@@ -246,6 +232,7 @@ export class NgGridComponent implements OnInit, OnChanges {
         return false;
     }
 
+    @HostListener('mouseup', ['$event'])
     private mouseUp(e:MouseEvent) {
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
@@ -255,13 +242,5 @@ export class NgGridComponent implements OnInit, OnChanges {
             grid: this,
             event,
         };
-    }
-
-    private injectItems():void {
-        if (this.gridItems) {
-            this.gridItems.forEach((item) => {
-                this.ngGrid.injectItem(item.config.component.type, item._ngEl.nativeElement, item.config.component.data)
-            });
-        }
     }
 }
