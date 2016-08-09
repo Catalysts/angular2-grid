@@ -226,10 +226,10 @@ export class NgGridComponent implements OnInit, OnDestroy {
         const i = this.ngGrid.getItem(e);
         if (i && i.canDrag(e)) {
             this.gridDragService.dragStart(i, this, e);
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
         }
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
     }
 
     @HostListener('mouseup', ['$event'])

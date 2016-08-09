@@ -52,7 +52,7 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
     @Output()
     public ngGridItemChange:EventEmitter<NgGridItemConfig> = new EventEmitter<NgGridItemConfig>();
 
-    @ViewChild('componentContainer', { read: ViewContainerRef })
+    @ViewChild('componentContainer', {read: ViewContainerRef})
     private componentContainer:ViewContainerRef;
 
     private componentRef:ComponentRef;
@@ -75,6 +75,8 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
     private _elemTop:number;
     private _added:boolean = false;
     private _differ:KeyValueDiffer;
+
+    private isResizing:boolean = false;
 
     private mouseMove$:ReplaySubject = new ReplaySubject();
     private mouseDown$:ReplaySubject = new ReplaySubject();
@@ -116,6 +118,7 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
         this.recalculateSelf();
 
         if (!this._added) {
+
             this._added = true;
             this._ngGrid.addItem(this);
         }
@@ -171,7 +174,10 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
     public onMouseMove(e:MouseEvent):void {
         var mousePos = this._getMousePosition(e);
 
-        if (this.canResize(e)) {
+        if (this.isResizing) {
+            console.log(e);
+            this.setDimensions(this._elemWidth + e.offsetX, this._elemHeight);
+        } else if (this.canResize(e)) {
             this.setResizeCursorStyle(mousePos);
         } else {
             this.renderer.setElementStyle(this.elementRef.nativeElement, 'cursor', 'auto');
@@ -179,8 +185,20 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
     }
 
     @HostListener('mousedown', ['$event'])
-    private onMouseDown(e:MouseEvent):void {
+    private onMouseDown(e:MouseEvent):boolean {
+        if (this.canResize(e)) {
+            this.isResizing = true;
+            e.preventDefault();
+            e.stopPropagation();
+            return true;
+        } else {
+            this.renderer.setElementStyle(this.elementRef.nativeElement, 'cursor', 'auto');
+        }
+    }
 
+    @HostListener('window:mouseup')
+    private onMouseUp() {
+        this.isResizing = false;
     }
 
     private setResizeCursorStyle(mousePosition) {
