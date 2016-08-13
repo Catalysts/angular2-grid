@@ -4,7 +4,7 @@
 import {
     Component, Input,
 } from '@angular/core';
-import {NgGridComponent} from "./components/ng-grid/NgGridComponent";
+import {NgGridComponent} from './components/ng-grid/NgGridComponent';
 
 @Component({
     selector: 'ngGridWrapper',
@@ -17,7 +17,7 @@ import {NgGridComponent} from "./components/ng-grid/NgGridComponent";
 })
 export class NgGridWrapper {
     @Input()
-    public items;
+    public items: any;
     @Input()
-    public config;
+    public config: any;
 }

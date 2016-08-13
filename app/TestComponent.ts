@@ -15,11 +15,11 @@ import {GridDragService} from "./service/GridDragService";
     `,
 })
 export class TestComponent implements OnInit, OnDestroy {
-    name:string = 'aa';
-    id:string;
+    name: string = 'aa';
+    id: string;
 
-    constructor(private changeDetectorRef:ChangeDetectorRef,
-    private gridDragService:GridDragService) {
+    constructor(private changeDetectorRef: ChangeDetectorRef,
+                private gridDragService: GridDragService) {
     }
 
     ngOnInit() {
@@ -30,7 +30,7 @@ export class TestComponent implements OnInit, OnDestroy {
         console.log('destroyed');
     }
 
-    clickButton(e) {
+    clickButton(e: any) {
         this.gridDragService.removeItemById(this.id);
         e.preventDefault();
         e.stopPropagation();

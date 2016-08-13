@@ -14,7 +14,7 @@ import {
 import {NgGridItemEvent} from './NgGridItemEvent';
 import {NgGridItemConfig, ITEM_DEFAULT_CONFIG} from './NgGridItemConfig';
 import {NgGrid} from '../ng-grid/NgGrid';
-import {BehaviorSubject, ReplaySubject, ReplaySubject} from "rxjs/Rx";
+import {BehaviorSubject, ReplaySubject} from "rxjs/Rx";
 
 @Component({
     selector: '[ngGridItem]',
@@ -55,7 +55,7 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('componentContainer', {read: ViewContainerRef})
     private componentContainer:ViewContainerRef;
 
-    private componentRef:ComponentRef;
+    private componentRef:ComponentRef<NgGridItem>;
 
     public isFixed:boolean = false;
     public isDraggable:boolean = true;
@@ -78,9 +78,9 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
 
     private isResizing:boolean = false;
 
-    private mouseMove$:ReplaySubject = new ReplaySubject();
-    private mouseDown$:ReplaySubject = new ReplaySubject();
-    private resize$:ReplaySubject = new ReplaySubject();
+    // private mouseMove$:ReplaySubject = new ReplaySubject<any>();
+    // private mouseDown$:ReplaySubject = new ReplaySubject<any>();
+    // private resize$:ReplaySubject = new ReplaySubject<any>();
 
     constructor(private differs:KeyValueDiffers,
                 private elementRef:ElementRef,
@@ -201,7 +201,7 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
         this.isResizing = false;
     }
 
-    private setResizeCursorStyle(mousePosition) {
+    private setResizeCursorStyle(mousePosition:any) {
         if (mousePosition.left < this._elemWidth && mousePosition.left > this._elemWidth - this._borderSize
             && mousePosition.top < this._elemHeight && mousePosition.top > this._elemHeight - this._borderSize) {
             this.renderer.setElementStyle(this.elementRef.nativeElement, 'cursor', 'nwse-resize');
@@ -248,10 +248,6 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
         this.isDraggable = !!config.draggable;
         this.isResizable = !!config.resizable;
         this.isFixed = !!config.fixed;
-
-        if (this._added) {
-            this._ngGrid.updateItem(this);
-        }
     }
 
     public ngDoCheck():boolean {
@@ -294,7 +290,7 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
         };
     }
 
-    public move(event:MouseEvent, offset) {
+    public move(event:MouseEvent, offset:any) {
         let parentTop = this.elementRef.nativeElement.parentElement.getBoundingClientRect().top;
         parentTop += window.scrollY;
 
@@ -356,7 +352,7 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
             this.componentRef.destroy();
         }
         this.componentResolver.resolveComponent(this._config.component.type)
-            .then((factory:ComponentFactory) => {
+            .then((factory:ComponentFactory<NgGridItem>) => {
                 this.componentRef = this.componentContainer.createComponent(factory);
                 Object.assign(this.componentRef.instance, this._config.component.data);
             });

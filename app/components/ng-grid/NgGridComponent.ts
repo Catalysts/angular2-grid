@@ -37,21 +37,21 @@ import {NgGridConfig} from "./NgGridConfig";
 })
 export class NgGridComponent implements OnInit, OnDestroy {
     @ViewChild(NgGrid)
-    public ngGrid:NgGrid;
+    public ngGrid: NgGrid;
 
     @Input()
-    private config:NgGridConfig;
+    private config: NgGridConfig;
 
     @Input()
-    public items:NgGridItemConfig[] = [];
+    public items: NgGridItemConfig[] = [];
 
-    public mouseMove$:Subject<any> = new Subject();
-    public newItemAdd$:Subject<any> = new Subject();
+    public mouseMove$: Subject<any> = new Subject();
+    public newItemAdd$: Subject<any> = new Subject();
 
     static GRID_POSITIONS_OFFSET = 1;
 
-    constructor(private gridDragService:GridDragService,
-                private gridPositionService:GridValidationService) {
+    constructor(private gridDragService: GridDragService,
+                private gridPositionService: GridValidationService) {
     }
 
     ngOnInit() {
@@ -61,16 +61,16 @@ export class NgGridComponent implements OnInit, OnDestroy {
         release.subscribe(v => this.itemReleased(v));
     }
 
-    ngOnDestroy():any {
+    ngOnDestroy(): void {
         this.ngGrid._items.forEach(item => item.ngOnDestroy())
     }
 
     @HostListener('mousemove', ['$event'])
-    private mouseMove(e) {
+    mouseMove(e: any) {
         this.mouseMove$.next(this.toObserverEvent(e));
     }
 
-    public itemDraggedInside(v) {
+    public itemDraggedInside(v: any) {
         if (this.gridDragService.draggedItem) {
             const {item, event} = v.itemDragged;
 
@@ -91,11 +91,11 @@ export class NgGridComponent implements OnInit, OnDestroy {
         }
     }
 
-    public itemDragOutside(v) {
+    public itemDragOutside(v: any) {
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
 
-    public itemReleased(v) {
+    public itemReleased(v: any) {
         const conf = this.itemConfigFromEvent(v.release.item.config, v.move.event);
 
         if (this.gridPositionService.validateGridPosition(conf.col, conf.row, v.release.item, this.ngGrid._config)
@@ -112,26 +112,26 @@ export class NgGridComponent implements OnInit, OnDestroy {
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
 
-    private itemConfigFromEvent(config:NgGridItemConfig, event:MouseEvent):NgGridItemConfig {
+    private itemConfigFromEvent(config: NgGridItemConfig, event: MouseEvent): NgGridItemConfig {
         const {col, row} = this.ngGrid.getGridPositionOfEvent(event, this.gridDragService.posOffset);
         return Object.assign({}, config, {col, row});
     }
 
-    private hasCollisions(itemConf:NgGridItemConfig, initialConf:NgGridItemConfig):boolean {
+    private hasCollisions(itemConf: NgGridItemConfig, initialConf: NgGridItemConfig): boolean {
         return this.items
             .filter(c => !(c.col == initialConf.col && c.row == initialConf.row))
-            .some((conf:NgGridItemConfig) => intersect(
+            .some((conf: NgGridItemConfig) => intersect(
                 toRectangle(conf), toRectangle(itemConf)
             ));
 
-        function intersect(r1, r2) {
+        function intersect(r1: any, r2: any) {
             return !(r2.left > r1.right ||
             r2.right < r1.left ||
             r2.top > r1.bottom ||
             r2.bottom < r1.top);
         }
 
-        function toRectangle(conf:NgGridItemConfig) {
+        function toRectangle(conf: NgGridItemConfig) {
             return {
                 left: conf.col,
                 top: conf.row,
@@ -141,7 +141,7 @@ export class NgGridComponent implements OnInit, OnDestroy {
         }
     }
 
-    private isOutsideGrid(item:NgGridItemConfig, gridSize:any):boolean {
+    private isOutsideGrid(item: NgGridItemConfig, gridSize: any): boolean {
         const {col, row} = item;
         const {sizex, sizey} = item;
         return (col + sizex - NgGridComponent.GRID_POSITIONS_OFFSET > gridSize.columns)
@@ -149,14 +149,16 @@ export class NgGridComponent implements OnInit, OnDestroy {
     }
 
     @HostListener('dragover', ['$event'])
-    private dragOver(e) {
+    dragOver(e: any) {
         const item = this.gridDragService.dragItemConf;
-        if (!item) return;
+        if (!item) {
+            return;
+        }
         const dims = {
             x: item.sizex,
             y: item.sizey
         };
-        const conf:NgGridItemConfig = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
+        const conf: NgGridItemConfig = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
         conf.sizex = dims.x;
         conf.sizey = dims.y;
         this.ngGrid._placeholderRef.instance.setGridPosition(conf.col, conf.row);
@@ -172,16 +174,16 @@ export class NgGridComponent implements OnInit, OnDestroy {
     }
 
     @HostListener('dragleave', ['$event'])
-    private dragLeave(e) {
+    dragLeave(e: any) {
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
 
     @HostListener('drop', ['$event'])
-    private drop(e) {
+    drop(e:any) {
         const content = this.gridDragService.dragItemConf;
         this.gridDragService.dragItemConf = null;
         if (content) {
-            const conf:NgGridItemConfig = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
+            const conf: NgGridItemConfig = this.ngGrid.getGridPositionOfEvent(e, {left: 0, top: 0});
             conf.sizex = content.sizex;
             conf.sizey = content.sizey;
             if (this.gridPositionService.validateGridPosition(conf.col, conf.row, content, this.ngGrid._config)
@@ -201,7 +203,7 @@ export class NgGridComponent implements OnInit, OnDestroy {
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
 
-    public removeItem(item:NgGridItemConfig) {
+    public removeItem(item: NgGridItemConfig) {
         let removed = false;
         this.items = this.items.filter(i => {
             if (i.col == item.col && i.row == item.row && !removed) {
@@ -213,16 +215,16 @@ export class NgGridComponent implements OnInit, OnDestroy {
         });
     }
 
-    public removeItemById(id:string) {
+    public removeItemById(id: string) {
         this.items = this.items.filter(i => i.id != id);
     }
 
-    public addItem(item:NgGridItemConfig) {
+    public addItem(item: NgGridItemConfig) {
         this.items = this.items.concat([item]);
     }
 
     @HostListener('mousedown', ['$event'])
-    private mouseDown(e) {
+    mouseDown(e:any) {
         const i = this.ngGrid.getItem(e);
         if (i && i.canDrag(e)) {
             this.gridDragService.dragStart(i, this, e);
@@ -233,11 +235,11 @@ export class NgGridComponent implements OnInit, OnDestroy {
     }
 
     @HostListener('mouseup', ['$event'])
-    private mouseUp(e:MouseEvent) {
+    private mouseUp(e: MouseEvent) {
         this.ngGrid._placeholderRef.instance.setSize(0, 0);
     }
 
-    private toObserverEvent(event) {
+    private toObserverEvent(event:any) {
         return {
             grid: this,
             event,

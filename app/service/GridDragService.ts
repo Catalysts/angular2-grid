@@ -1,42 +1,41 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject, Subscription} from 'rxjs/Rx';
+import {Observable, Subject} from 'rxjs/Rx';
 import 'rxjs/add/operator/share';
-import "rxjs/add/operator/distinct";
-import "rxjs/add/operator/debounce";
-import "rxjs/add/operator/combineLatest";
+import 'rxjs/add/operator/distinct';
+import 'rxjs/add/operator/debounce';
+import 'rxjs/add/operator/combineLatest';
 
-import {NgGridItem} from "../components/ng-grid-item/NgGridItem";
-import {NgGridComponent} from "../components/ng-grid/NgGridComponent";
-import {NgGridItemConfig} from "../components/ng-grid-item/NgGridItemConfig";
-import {NgGridWrapper} from "src/NgGridWrapper";
-import {isArray} from "@angular/core/src/facade/lang";
+import {NgGridItem} from '../components/ng-grid-item/NgGridItem';
+import {NgGridComponent} from '../components/ng-grid/NgGridComponent';
+import {NgGridItemConfig} from '../components/ng-grid-item/NgGridItemConfig';
+import {isArray} from '@angular/core/src/facade/lang';
 
 export interface GridDragEvent {
-    grid:NgGridComponent,
-    event:any,
-    item:NgGridItem
+    grid: NgGridComponent,
+    event: any,
+    item: NgGridItem
 }
 
 @Injectable()
 export class GridDragService {
     private window = window;
-    public itemDragged$:Observable<any>;
-    public itemReleased$:Subject<any> = new Subject();
-    public itemAdded$:Subject<any> = new Subject();
+    public itemDragged$: Observable<any>;
+    public itemReleased$: Subject<any> = new Subject();
+    public itemAdded$: Subject<any> = new Subject();
 
-    private windowMouseMove$:Observable<any>;
-    private windowMouseUp$:Observable<any>;
-    private windowDragOver$:Observable<any>;
-    private windowDrop$:Observable<any>;
+    private windowMouseMove$: Observable<any>;
+    private windowMouseUp$: Observable<any>;
+    private windowDragOver$: Observable<any>;
+    private windowDrop$: Observable<any>;
 
-    public draggedItem:NgGridItem;
-    public initialGrid:NgGridComponent;
-    public dragItemConf:NgGridItemConfig;
-    private grids:Array<NgGridComponent> = [];
+    public draggedItem: NgGridItem;
+    public initialGrid: NgGridComponent;
+    public dragItemConf: NgGridItemConfig;
+    private grids: Array<NgGridComponent> = [];
 
-    public posOffset:any = {};
+    public posOffset: any = {};
 
-    private removing:boolean = false;
+    private removing: boolean = false;
 
     public constructor() {
         this.windowMouseMove$ = Observable.fromEvent(this.window, 'mousemove').map(e => ({grid: null, event: e}));
@@ -58,7 +57,7 @@ export class GridDragService {
         this.windowMouseUp$.subscribe(e => this.mouseUp(e));
     }
 
-    public removeItemById(id:string) {
+    public removeItemById(id: string) {
         this.removing = true;
         this.grids.forEach(grid => {
             if (grid.items.map(item => item.id).includes(id)) {
@@ -73,7 +72,7 @@ export class GridDragService {
         return this.grids[0].items;
     }
 
-    public registerGrid(grid:NgGridComponent) {
+    public registerGrid(grid: NgGridComponent) {
         const mouseMoveCombined = grid.mouseMove$.merge(this.windowMouseMove$)
             .distinct((a, b) => GridDragService.equalScreenPosition(a.event, b.event));
         const dragCombined = mouseMoveCombined
@@ -119,7 +118,7 @@ export class GridDragService {
         };
     }
 
-    private changeSubgridItemsConfig(id:string, items:NgGridItemConfig[]) {
+    private changeSubgridItemsConfig(id: string, items: NgGridItemConfig[]) {
         const placedItems = this.getPlacedItems();
         const subgridIndex = placedItems
             .findIndex(item => item.id === id && isArray(item.component.data.items));
@@ -128,13 +127,13 @@ export class GridDragService {
         }
     }
 
-    public mouseMove(event) {
+    public mouseMove(event:any) {
         if (this.draggedItem) {
             this.draggedItem.move(event, this.posOffset);
         }
     }
 
-    public mouseUp(event) {
+    public mouseUp(event:any) {
         if (this.draggedItem) {
             this.itemReleased$.next({
                 item: this.draggedItem,
@@ -143,7 +142,7 @@ export class GridDragService {
         }
     }
 
-    public dragStart(item:NgGridItem, grid:NgGridComponent, event) {
+    public dragStart(item: NgGridItem, grid: NgGridComponent, event:any) {
         event.preventDefault();
         this.draggedItem = item;
         this.initialGrid = grid;
@@ -152,7 +151,7 @@ export class GridDragService {
         item.startMoving();
     }
 
-    private static equalScreenPosition(e1, e2):boolean {
+    private static equalScreenPosition(e1:any, e2:any): boolean {
         return e1.screenX == e2.screenX && e1.screenY == e2.screenY;
     }
 }
