@@ -16,7 +16,6 @@ import {
 
 import {TestComponent} from './TestComponent';
 import {NgGridWrapper} from './NgGridWrapper';
-import {UUID} from 'angular2-uuid';
 import {NgGridPlaceholder} from './components/ng-grid/NgGridPlaceholder';
 
 @Component({
@@ -37,37 +36,33 @@ class MyAppComponent implements OnInit {
     @ViewChild('grid2')
     ngGrid2: NgGrid;
 
-    gridConfig = <NgGridConfig>{
-        'id': UUID.UUID(),
-        'margins': [0],
-        'draggable': true,
-        'resizable': false,
-        'maxCols': 16,
-        'maxRows': 30,
-        'visibleCols': 0,
-        'visibleRows': 0,
-        'minCols': 1,
-        'minRows': 1,
-        'colWidth': 50,
-        'rowHeight': 50,
-        'cascade': 'off',
-        'minWidth': 50,
-        'minHeight': 50,
-        'fixToGrid': false,
-        'autoStyle': true,
-        'autoResize': false,
-        'maintainRatio': false,
-        'preferNew': true,
+    gridConfig: NgGridConfig = {
+        draggable: true,
+        resizable: false,
+        columnsCount: 16,
+        rowsCount: 30,
+        margins: {
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0
+        },
+        cellWidth: 50,
+        cellHeight: 50,
     };
     items: NgGridItemConfig[] = [
         {
             id: '1',
             col: 1,
             row: 1,
-            sizex: 3,
-            sizey: 2,
+            colSpan: 3,
+            rowSpan: 2,
+            cellHeight: 50,
+            cellWidth: 50,
+            fixed: false,
             component: {
-                type: TestComponent, data: {
+                type: TestComponent,
+                data: {
                     name: 'tudor',
                     id: '1',
                 }
@@ -77,10 +72,13 @@ class MyAppComponent implements OnInit {
             id: '2',
             col: 9,
             row: 1,
-            sizex: 3,
-            sizey: 2,
+            colSpan: 3,
+            rowSpan: 2,
+            cellHeight: 50,
+            cellWidth: 50,
             component: {
-                type: TestComponent, data: {
+                type: TestComponent,
+                data: {
                     id: '2',
                 }
             },
@@ -89,11 +87,14 @@ class MyAppComponent implements OnInit {
             id: '4',
             col: 1,
             row: 4,
-            sizex: 16,
-            sizey: 2,
-            draggable: false,
+            colSpan: 16,
+            rowSpan: 2,
+            cellHeight: 50,
+            cellWidth: 50,
+            fixed: true,
             component: {
-                type: TestComponent, data: {
+                type: TestComponent,
+                data: {
                     id: '4',
                 }
             },
@@ -102,11 +103,14 @@ class MyAppComponent implements OnInit {
             id: '5',
             col: 1,
             row: 6,
-            sizex: 3,
-            sizey: 2,
-            draggable: false,
+            colSpan: 3,
+            rowSpan: 2,
+            cellHeight: 50,
+            cellWidth: 50,
+            fixed: true,
             component: {
-                type: TestComponent, data: {
+                type: TestComponent,
+                data: {
                     id: '5',
                 }
             },
@@ -115,10 +119,13 @@ class MyAppComponent implements OnInit {
             id: '6',
             col: 9,
             row: 6,
-            sizex: 3,
-            sizey: 2,
+            colSpan: 3,
+            rowSpan: 2,
+            cellHeight: 50,
+            cellWidth: 50,
             component: {
-                type: TestComponent, data: {
+                type: TestComponent,
+                data: {
                     id: '6',
                 }
             },
@@ -127,10 +134,13 @@ class MyAppComponent implements OnInit {
             id: '8',
             col: 1,
             row: 12,
-            sizex: 16,
-            sizey: 2,
+            colSpan: 16,
+            rowSpan: 2,
+            cellHeight: 50,
+            cellWidth: 50,
             component: {
-                type: TestComponent, data: {
+                type: TestComponent,
+                data: {
                     id: '8',
                 }
             },
@@ -140,8 +150,8 @@ class MyAppComponent implements OnInit {
         id: '23',
         col: 9,
         row: 9,
-        sizex: 12,
-        sizey: 8,
+        colSpan: 12,
+        rowSpan: 8,
         component: {
             type: NgGridWrapper,
             data: {
@@ -186,8 +196,8 @@ class MyAppComponent implements OnInit {
 
 @NgModule({
     imports: [BrowserModule],
-    declarations: [MyAppComponent, NgGridPlaceholder],
-    entryComponents: [NgGridPlaceholder],
+    declarations: [MyAppComponent, NgGridPlaceholder, TestComponent],
+    entryComponents: [NgGridPlaceholder, TestComponent],
     bootstrap: [MyAppComponent]
 })
 export class AppModule {

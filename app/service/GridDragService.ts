@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject} from 'rxjs/Rx';
+import {Observable, Subject} from 'rxjs/Rx.KitchenSink';
 import 'rxjs/add/operator/share';
 import 'rxjs/add/operator/distinct';
 import 'rxjs/add/operator/debounce';
@@ -7,13 +7,13 @@ import 'rxjs/add/operator/combineLatest';
 
 import {NgGridItem} from '../components/ng-grid-item/NgGridItem';
 import {NgGridComponent} from '../components/ng-grid/NgGridComponent';
-import {NgGridItemConfig} from '../components/ng-grid-item/NgGridItemConfig';
+import {NgGridItemConfig} from '../components/ng-grid-item/NgGridItemTypes';
 import {isArray} from '@angular/core/src/facade/lang';
 
 export interface GridDragEvent {
-    grid: NgGridComponent,
-    event: any,
-    item: NgGridItem
+    grid: NgGridComponent;
+    event: any;
+    item: NgGridItem;
 }
 
 @Injectable()
@@ -127,13 +127,13 @@ export class GridDragService {
         }
     }
 
-    public mouseMove(event:any) {
+    public mouseMove(event: any) {
         if (this.draggedItem) {
             this.draggedItem.move(event, this.posOffset);
         }
     }
 
-    public mouseUp(event:any) {
+    public mouseUp(event: any) {
         if (this.draggedItem) {
             this.itemReleased$.next({
                 item: this.draggedItem,
@@ -142,7 +142,7 @@ export class GridDragService {
         }
     }
 
-    public dragStart(item: NgGridItem, grid: NgGridComponent, event:any) {
+    public dragStart(item: NgGridItem, grid: NgGridComponent, event: any) {
         event.preventDefault();
         this.draggedItem = item;
         this.initialGrid = grid;
@@ -151,7 +151,7 @@ export class GridDragService {
         item.startMoving();
     }
 
-    private static equalScreenPosition(e1:any, e2:any): boolean {
+    private static equalScreenPosition(e1: any, e2: any): boolean {
         return e1.screenX == e2.screenX && e1.screenY == e2.screenY;
     }
 }

@@ -64,7 +64,7 @@ export function main() {
 			var e: any = { target: target };
 
 			var ngGridItem: NgGridItem = new NgGridItem(null, null, null);
-			var getMousePositionSpy = spyOn(ngGridItem, '_getMousePosition');
+			var getMousePositionSpy = spyOn(ngGridItem, 'getMousePosition');
 			getMousePositionSpy.and.returnValue({ left: 0, top: 0 });
 
 			for (let size of [5, 10, 15]) {
@@ -152,27 +152,27 @@ export function main() {
 			var ngGridItem: NgGridItem = new NgGridItem(ngEl, renderSpy, ngGrid);
 			spyOn(ngGridItem, 'canDrag');
 			spyOn(ngGridItem, 'canResize');
-			spyOn(ngGridItem, '_getMousePosition');
+			spyOn(ngGridItem, 'getMousePosition');
 
 			ngGridItem.onMouseMove(e);
 			expect(ngGridItem.canDrag).not.toHaveBeenCalled();
 			expect(ngGridItem.canResize).not.toHaveBeenCalled();
-			expect((<any>ngGridItem)._getMousePosition).not.toHaveBeenCalled();
+			expect((<any>ngGridItem).getMousePosition).not.toHaveBeenCalled();
 			expect(renderSpy.setElementStyle).not.toHaveBeenCalled();
 			(<any>ngGridItem.canDrag).calls.reset();
 			(<any>ngGridItem.canResize).calls.reset();
-			(<any>ngGridItem)._getMousePosition.calls.reset();
+			(<any>ngGridItem).getMousePosition.calls.reset();
 			renderSpy.setElementStyle.calls.reset();
 
 			ngGrid.autoStyle = true;
 			ngGridItem.onMouseMove(e);
 			expect(ngGridItem.canDrag).not.toHaveBeenCalled();
 			expect(ngGridItem.canResize).not.toHaveBeenCalled();
-			expect((<any>ngGridItem)._getMousePosition).not.toHaveBeenCalled();
+			expect((<any>ngGridItem).getMousePosition).not.toHaveBeenCalled();
 			expect(renderSpy.setElementStyle).toHaveBeenCalledWith(ngEl, 'cursor', 'default');
 			(<any>ngGridItem.canDrag).calls.reset();
 			(<any>ngGridItem.canResize).calls.reset();
-			(<any>ngGridItem)._getMousePosition.calls.reset();
+			(<any>ngGridItem).getMousePosition.calls.reset();
 			renderSpy.setElementStyle.calls.reset();
 
 			(<any>ngGridItem)._resizeHandle = true;
@@ -181,11 +181,11 @@ export function main() {
 			ngGridItem.onMouseMove(e);
 			expect(ngGridItem.canDrag).not.toHaveBeenCalled();
 			expect(ngGridItem.canResize).toHaveBeenCalled();
-			expect((<any>ngGridItem)._getMousePosition).not.toHaveBeenCalled();
+			expect((<any>ngGridItem).getMousePosition).not.toHaveBeenCalled();
 			expect(renderSpy.setElementStyle).toHaveBeenCalledWith(ngEl, 'cursor', 'nwse-resize');
 			(<any>ngGridItem.canDrag).calls.reset();
 			(<any>ngGridItem.canResize).calls.reset();
-			(<any>ngGridItem)._getMousePosition.calls.reset();
+			(<any>ngGridItem).getMousePosition.calls.reset();
 			renderSpy.setElementStyle.calls.reset();
 
 			(<any>ngGridItem)._resizeHandle = false;
@@ -193,15 +193,15 @@ export function main() {
 			(<any>ngGridItem)._elemHeight = 0;
 			(<any>ngGridItem)._borderSize = 15;
 			ngGrid.resizeEnable = true;
-			(<any>ngGridItem)._getMousePosition.and.returnValue({});
+			(<any>ngGridItem).getMousePosition.and.returnValue({});
 			ngGridItem.onMouseMove(e);
 			expect(ngGridItem.canDrag).not.toHaveBeenCalled();
 			expect(ngGridItem.canResize).not.toHaveBeenCalled();
-			expect((<any>ngGridItem)._getMousePosition).toHaveBeenCalled();
+			expect((<any>ngGridItem).getMousePosition).toHaveBeenCalled();
 			expect(renderSpy.setElementStyle).toHaveBeenCalledWith(ngEl, 'cursor', 'default');
 			(<any>ngGridItem.canDrag).calls.reset();
 			(<any>ngGridItem.canResize).calls.reset();
-			(<any>ngGridItem)._getMousePosition.calls.reset();
+			(<any>ngGridItem).getMousePosition.calls.reset();
 			renderSpy.setElementStyle.calls.reset();
 
 			(<any>ngGridItem)._resizeHandle = false;
@@ -209,15 +209,15 @@ export function main() {
 			(<any>ngGridItem)._elemHeight = 10;
 			(<any>ngGridItem)._borderSize = 15;
 			ngGrid.resizeEnable = true;
-			(<any>ngGridItem)._getMousePosition.and.returnValue({ left: 0, top: 0 });
+			(<any>ngGridItem).getMousePosition.and.returnValue({ left: 0, top: 0 });
 			ngGridItem.onMouseMove(e);
 			expect(ngGridItem.canDrag).not.toHaveBeenCalled();
 			expect(ngGridItem.canResize).not.toHaveBeenCalled();
-			expect((<any>ngGridItem)._getMousePosition).toHaveBeenCalled();
+			expect((<any>ngGridItem).getMousePosition).toHaveBeenCalled();
 			expect(renderSpy.setElementStyle).toHaveBeenCalledWith(ngEl, 'cursor', 'ns-resize');
 			(<any>ngGridItem.canDrag).calls.reset();
 			(<any>ngGridItem.canResize).calls.reset();
-			(<any>ngGridItem)._getMousePosition.calls.reset();
+			(<any>ngGridItem).getMousePosition.calls.reset();
 			renderSpy.setElementStyle.calls.reset();
 
 			(<any>ngGridItem)._resizeHandle = false;
@@ -225,15 +225,15 @@ export function main() {
 			(<any>ngGridItem)._elemHeight = 0;
 			(<any>ngGridItem)._borderSize = 15;
 			ngGrid.resizeEnable = true;
-			(<any>ngGridItem)._getMousePosition.and.returnValue({ left: 0, top: 0 });
+			(<any>ngGridItem).getMousePosition.and.returnValue({ left: 0, top: 0 });
 			ngGridItem.onMouseMove(e);
 			expect(ngGridItem.canDrag).not.toHaveBeenCalled();
 			expect(ngGridItem.canResize).not.toHaveBeenCalled();
-			expect((<any>ngGridItem)._getMousePosition).toHaveBeenCalled();
+			expect((<any>ngGridItem).getMousePosition).toHaveBeenCalled();
 			expect(renderSpy.setElementStyle).toHaveBeenCalledWith(ngEl, 'cursor', 'ew-resize');
 			(<any>ngGridItem.canDrag).calls.reset();
 			(<any>ngGridItem.canResize).calls.reset();
-			(<any>ngGridItem)._getMousePosition.calls.reset();
+			(<any>ngGridItem).getMousePosition.calls.reset();
 			renderSpy.setElementStyle.calls.reset();
 
 			(<any>ngGridItem)._resizeHandle = false;
@@ -241,15 +241,15 @@ export function main() {
 			(<any>ngGridItem)._elemHeight = 10;
 			(<any>ngGridItem)._borderSize = 15;
 			ngGrid.resizeEnable = true;
-			(<any>ngGridItem)._getMousePosition.and.returnValue({ left: 0, top: 0 });
+			(<any>ngGridItem).getMousePosition.and.returnValue({ left: 0, top: 0 });
 			ngGridItem.onMouseMove(e);
 			expect(ngGridItem.canDrag).not.toHaveBeenCalled();
 			expect(ngGridItem.canResize).not.toHaveBeenCalled();
-			expect((<any>ngGridItem)._getMousePosition).toHaveBeenCalled();
+			expect((<any>ngGridItem).getMousePosition).toHaveBeenCalled();
 			expect(renderSpy.setElementStyle).toHaveBeenCalledWith(ngEl, 'cursor', 'nwse-resize');
 			(<any>ngGridItem.canDrag).calls.reset();
 			(<any>ngGridItem.canResize).calls.reset();
-			(<any>ngGridItem)._getMousePosition.calls.reset();
+			(<any>ngGridItem).getMousePosition.calls.reset();
 			renderSpy.setElementStyle.calls.reset();
 
 
@@ -259,11 +259,11 @@ export function main() {
 			ngGridItem.onMouseMove(e);
 			expect(ngGridItem.canDrag).toHaveBeenCalled();
 			expect(ngGridItem.canResize).not.toHaveBeenCalled();
-			expect((<any>ngGridItem)._getMousePosition).not.toHaveBeenCalled();
+			expect((<any>ngGridItem).getMousePosition).not.toHaveBeenCalled();
 			expect(renderSpy.setElementStyle).toHaveBeenCalledWith(ngEl, 'cursor', 'move');
 			(<any>ngGridItem.canDrag).calls.reset();
 			(<any>ngGridItem.canResize).calls.reset();
-			(<any>ngGridItem)._getMousePosition.calls.reset();
+			(<any>ngGridItem).getMousePosition.calls.reset();
 			renderSpy.setElementStyle.calls.reset();
 		});
 
@@ -588,15 +588,15 @@ export function main() {
 
 			var ngGridItem: NgGridItem = new NgGridItem(elem, null, null);
 
-			expect((<any>ngGridItem)._getMousePosition(event)).toEqual({ 'left': 9881, 'top': 20769 });
+			expect((<any>ngGridItem).getMousePosition(event)).toEqual({ 'left': 9881, 'top': 20769 });
 
 			event.originalEvent.touches = [];
 			event.originalEvent.changedTouches = [{ 'clientX': 8658, 'clientY': 9757 }];
 
-			expect((<any>ngGridItem)._getMousePosition(event)).toEqual({ 'left': 4305, 'top': 6203 });
+			expect((<any>ngGridItem).getMousePosition(event)).toEqual({ 'left': 4305, 'top': 6203 });
 
 			event.originalEvent.touches = [{ 'clientX': 34523, 'clientY': 7898 }];
-			expect((<any>ngGridItem)._getMousePosition(event)).toEqual({ 'left': 30170, 'top': 4344 });
+			expect((<any>ngGridItem).getMousePosition(event)).toEqual({ 'left': 30170, 'top': 4344 });
 		});
 
 		it("should add self to ngGrid, store config and recalculate when config is set", () => {

@@ -1,24 +1,24 @@
 import {
     Directive,
-    ElementRef, Input,
+    ElementRef,
+    Input,
+    HostListener
 } from '@angular/core';
-import {GridDragService} from "../../service/GridDragService";
+import {GridDragService} from '../../service/GridDragService';
+import {NgGridItemConfig} from '../ng-grid-item/NgGridItemTypes';
 
 @Directive({
     selector: '[ngGridDraggable]',
-    inputs: ['content: ngGridDraggable'],
-    host: {
-        '(dragstart)': 'dragStart($event)',
-    },
 })
 export class NgGridDraggable {
-    private content:any;
+    @Input('ngGridDraggable') private content: NgGridItemConfig;
 
-    constructor(private elementRef:ElementRef, private gridDragService:GridDragService) {
-        this.elementRef.nativeElement.draggable = "true";
+    constructor(private elementRef: ElementRef, private gridDragService: GridDragService) {
+        this.elementRef.nativeElement.draggable = 'true';
     }
 
-    private dragStart(e: any):void {
+    @HostListener('dragstart')
+    dragStart(): void {
         this.gridDragService.dragItemConf = this.content;
     }
 }
