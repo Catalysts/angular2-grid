@@ -9,7 +9,7 @@ import {
     OnInit,
     DoCheck,
     ViewContainerRef,
-    Output, ComponentResolver, ComponentFactory, ApplicationRef
+    Output, ComponentResolver, ComponentFactory, ApplicationRef,HostListener
 } from '@angular/core';
 
 import {NgGridItem} from '../ng-grid-item/NgGridItem';
@@ -17,6 +17,8 @@ import {NgGridConfig} from './NgGridConfig';
 import {NgGridPlaceholder} from './NgGridPlaceholder';
 import {NgGridItemEvent} from '../ng-grid-item/NgGridItemEvent';
 import {Observable} from "rxjs/Rx";
+import {GridValidationService} from "../../service/GridValidationService";
+import {NgGridItemConfig} from "../ng-grid-item/NgGridItemConfig";
 
 @Directive({
     selector: '[ngGrid]',
@@ -79,6 +81,7 @@ export class NgGrid implements OnInit, DoCheck {
     private _preferNew:boolean = false;
 
     private itemInitialPosition:any;
+    private itemInitialSize:any;
 
     private static CONST_DEFAULT_CONFIG:NgGridConfig = {
         id: '',
@@ -110,6 +113,7 @@ export class NgGrid implements OnInit, DoCheck {
                 private _renderer:Renderer,
                 private cmpResolver:ComponentResolver,
                 private viewContainer:ViewContainerRef,
+                private gridValidationService:GridValidationService,
                 private appRef:ApplicationRef) {
     }
 
@@ -409,22 +413,32 @@ export class NgGrid implements OnInit, DoCheck {
     }
 
     private _onMouseDown(e:any) {
-        // var mousePos = this._getMousePosition(e);
-        // var item = this._getItemFromPosition(mousePos);
-        //
-        // if (item != null) {
-        //     if (this.resizeEnable && item.canResize(e) != null) {
-        //         this._resizeStart(e);
-        //         return false;
-        //     } // else if (this.dragEnable && item.canDrag(e)) {
-        // //         // this._dragStart(e);
-        // //         this.gridDragService.dragStart(item, e);
-        // //         return false;
-        // //     }
-        // }
+        var mousePos = this._getMousePosition(e);
+        var item = this._getItemFromPosition(mousePos);
 
-        // return true;
+        if (item != null) {
+            if (this.resizeEnable && item.canResize(e) != null) {
+                this._resizeStart(e);
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            } // else if (this.dragEnable && item.canDrag(e)) {
+        //         // this._dragStart(e);
+        //         this.gridDragService.dragStart(item, e);
+        //         return false;
+        //     }
+        }
+
+        return true;
     }
+
+    @HostListener('mousemove', ['$event'])
+    private _onMouseMove(e:any) {
+        if (this.isResizing) {
+            this._resize(e);
+        }
+    }
+
 
     private _resizeStart(e:any):void {
         if (this.resizeEnable) {
@@ -435,7 +449,9 @@ export class NgGrid implements OnInit, DoCheck {
             this._resizingItem = item;
             this._resizeDirection = item.canResize(e);
             this._removeFromGrid(item);
-            this._createPlaceholder(item);
+            const {col, row} = item.getGridPosition();
+            this.itemInitialSize = item.getSize();
+            this._placeholderRef.instance.setGridPosition(col, row);
             this.isResizing = true;
 
             this.onResizeStart.emit(item);
@@ -537,8 +553,56 @@ export class NgGrid implements OnInit, DoCheck {
             if (this._resizeDirection == 'height') bigGrid.x = iGridPos.col + itemSize.x;
             if (this._resizeDirection == 'width') bigGrid.y = iGridPos.row + itemSize.y;
 
+            const conf = this._resizingItem.config;
+            conf.sizex = calcSize.x;
+            conf.sizey = calcSize.y;
+
+            if (this.gridValidationService.validateResize(conf.col, conf.row, conf, this._config)
+                && !this.hasCollisions(conf)
+                && !this.isOutsideGrid(conf, {
+                    columns: this._config.maxCols,
+                    rows: this._config.maxRows
+                })) {
+                this._placeholderRef.instance.makeValid();
+            } else {
+                this._placeholderRef.instance.makeInvalid();
+            }
+
             this.onResize.emit(this._resizingItem);
         }
+    }
+
+
+    private hasCollisions(itemConf:NgGridItemConfig):boolean {
+        return this._items
+            .map(c => c._config)
+            .filter(c => !(c.col == itemConf.col && c.row == itemConf.row))
+            .some((conf:NgGridItemConfig) => intersect(
+                toRectangle(conf), toRectangle(itemConf)
+            ));
+
+        function intersect(r1, r2) {
+            return !(r2.left > r1.right ||
+            r2.right < r1.left ||
+            r2.top > r1.bottom ||
+            r2.bottom < r1.top);
+        }
+
+        function toRectangle(conf:NgGridItemConfig) {
+            return {
+                left: conf.col,
+                top: conf.row,
+                right: conf.col + conf.sizex - 1,
+                bottom: conf.row + conf.sizey - 1
+            };
+        }
+    }
+
+    private isOutsideGrid(item:NgGridItemConfig, gridSize:any):boolean {
+        const {col, row} = item;
+        const {sizex, sizey} = item;
+        return (col + sizex - 1 > gridSize.columns)
+            || (row + sizey - 1 > gridSize.rows);
     }
 
     private _onMouseUp(e:any):boolean {
@@ -573,6 +637,7 @@ export class NgGrid implements OnInit, DoCheck {
             this._posOffset = null;
             // this._placeholderRef.destroy();
 
+
             this.onItemChange.emit(this._items.map(item => item.getEventOutput()));
         }
     }
@@ -583,8 +648,21 @@ export class NgGrid implements OnInit, DoCheck {
 
             var itemDims = this._resizingItem.getSize();
 
-            this._resizingItem.setSize(itemDims.x, itemDims.y);
+            // this._resizingItem.setSize(itemDims.x, itemDims.y);
+            const conf = this._resizingItem.config;
+            conf.sizex = itemDims.x;
+            conf.sizey = itemDims.y;
 
+            if (this.gridValidationService.validateResize(conf.col, conf.row, conf, this._config)
+                && !this.hasCollisions(conf)
+                && !this.isOutsideGrid(conf, {
+                    columns: this._config.maxCols,
+                    rows: this._config.maxRows
+                })) {
+                this._resizingItem.setSize(itemDims.x, itemDims.y);
+            } else {
+                this._resizingItem.setSize(this.itemInitialSize.x, this.itemInitialSize.y);
+            }
             this._addToGrid(this._resizingItem);
 
             this._cascadeGrid();

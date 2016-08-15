@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 
 import {NgGrid} from './NgGrid';
-import {GridValidationService} from '../../service/GridPositionService';
+import {GridValidationService} from '../../service/GridValidationService';
 import {NgGridItem} from "../ng-grid-item/NgGridItem";
 
 @Component({

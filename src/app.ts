@@ -34,7 +34,7 @@ class MyAppComponent extends OnInit {
         'id': UUID.UUID(),
         'margins': [0],
         'draggable': true,
-        'resizable': false,
+        'resizable': true,
         'maxCols': 16,
         'maxRows': 30,
         'visibleCols': 0,
@@ -167,6 +167,7 @@ class MyAppComponent extends OnInit {
 
     constructor(private gridPositionService:GridValidationService, private gridDragService:GridDragService) {
         this.gridPositionService.addPositionCondition(this.validatePosition);
+        this.gridPositionService.addResizeCondition(this.validateResize);
     }
 
     ngOnInit() {
@@ -174,6 +175,10 @@ class MyAppComponent extends OnInit {
 
     private validatePosition(gridCol:number, gridRow:number):boolean {
         return gridCol % 8 == 1;
+    }
+
+    private validateResize(col:number, row:number, conf:NgGridItemConfig):boolean {
+        return conf.sizex % 2 === 0;
     }
 }
 

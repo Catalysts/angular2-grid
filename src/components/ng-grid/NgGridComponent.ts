@@ -18,13 +18,14 @@ import {
 } from './NgGrid';
 import {Subject} from "rxjs/Rx";
 import {NgGridItemConfig} from "../ng-grid-item/NgGridItemConfig";
-import {GridValidationService} from "../../service/GridPositionService";
+import {GridValidationService} from "../../service/GridValidationService";
 import {NgGridConfig} from "./NgGridConfig";
+import {Output, EventEmitter} from '@angular/core';
 
 @Component({
     selector: 'ngGrid',
     template: `
-        <div [ngGrid]="config">
+        <div [ngGrid]="config" (onResizeStop)="resizeFinished($event)">
             <div [ngGridItem]="item"
                  *ngFor="let item of items">
             </div>
@@ -36,6 +37,8 @@ import {NgGridConfig} from "./NgGridConfig";
     ],
 })
 export class NgGridComponent implements OnInit, OnDestroy {
+    @Output() itemResizeStop = new EventEmitter<NgGridItemConfig>();
+
     @ViewChild(NgGrid)
     public ngGrid:NgGrid;
 
@@ -68,6 +71,13 @@ export class NgGridComponent implements OnInit, OnDestroy {
     @HostListener('mousemove', ['$event'])
     private mouseMove(e) {
         this.mouseMove$.next(this.toObserverEvent(e));
+    }
+
+    resizeFinished(item:any) {
+        this.itemResizeStop.emit(item.config);
+        this.items.push(item.config);
+        const ids = this.items.map(i => i.id);
+        this.items = this.items.filter((item, i, arr) => ids.indexOf(item.id) === i)
     }
 
     public itemDraggedInside(v) {
@@ -224,11 +234,15 @@ export class NgGridComponent implements OnInit, OnDestroy {
     @HostListener('mousedown', ['$event'])
     private mouseDown(e) {
         const i = this.ngGrid.getItem(e);
-        if (i && i.canDrag(e)) {
-            this.gridDragService.dragStart(i, this, e);
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
+        if (i) {
+            if (i.canResize(e)) {
+
+            } else if (i.canDrag(e)) {
+                this.gridDragService.dragStart(i, this, e);
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
         }
     }
 

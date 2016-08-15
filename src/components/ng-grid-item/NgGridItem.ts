@@ -175,8 +175,8 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
         var mousePos = this._getMousePosition(e);
 
         if (this.isResizing) {
-            console.log(e);
-            this.setDimensions(this._elemWidth + e.offsetX, this._elemHeight);
+            // console.log(e);
+            // this.setDimensions(this._elemWidth + e.offsetX, this._elemHeight)
         } else if (this.canResize(e)) {
             this.setResizeCursorStyle(mousePos);
         } else {
@@ -186,14 +186,14 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
 
     @HostListener('mousedown', ['$event'])
     private onMouseDown(e:MouseEvent):boolean {
-        if (this.canResize(e)) {
-            this.isResizing = true;
-            e.preventDefault();
-            e.stopPropagation();
-            return true;
-        } else {
-            this.renderer.setElementStyle(this.elementRef.nativeElement, 'cursor', 'auto');
-        }
+        // if (this.canResize(e)) {
+        //     this.isResizing = true;
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //     return true;
+        // } else {
+        //     this.renderer.setElementStyle(this.elementRef.nativeElement, 'cursor', 'auto');
+        // }
     }
 
     @HostListener('window:mouseup')
@@ -268,6 +268,9 @@ export class NgGridItem implements OnInit, OnDestroy, AfterViewInit {
     public setSize(x:number, y:number, update:boolean = true):void {
         this._sizex = x;
         this._sizey = y;
+
+        this.config.sizex = this._sizex;
+        this.config.sizey = this._sizey;
         if (update) this._recalculateDimensions();
 
         this.onItemChange.emit(this.getEventOutput());

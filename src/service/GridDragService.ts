@@ -8,7 +8,6 @@ import "rxjs/add/operator/combineLatest";
 import {NgGridItem} from "../components/ng-grid-item/NgGridItem";
 import {NgGridComponent} from "../components/ng-grid/NgGridComponent";
 import {NgGridItemConfig} from "../components/ng-grid-item/NgGridItemConfig";
-import {NgGridWrapper} from "src/NgGridWrapper";
 import {isArray} from "@angular/core/src/facade/lang";
 
 export interface GridDragEvent {
