@@ -1,11 +1,13 @@
 {
-  "name": "angular2-grid",
-  "version": "0.7.0",
+  "name": "angular2-grid-ef",
+  "version": "0.7.27-78f67c62cf73c62a3cbf0acfb56ff8dbf6b08d07-ef",
   "description": "A grid-based drag/drop/resize directive plugin for Angular 2",
   "main": "dist/NgGrid.js",
   "typings": "dist/NgGrid.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "bower install && gulp build",
+    "start": "concurrently \"http-server dist -p 9093 -o\" \"gulp watch\""
   },
   "repository": {
     "type": "git",
@@ -27,7 +29,8 @@
     "pocmanu (https://github.com/pocmanu)",
     "Chris Morabito (https://github.com/morabitowoolpert)",
     "Carlos Esteban Lopez Jaramillo (https://github.com/Luchillo)",
-    "Niklas Berg (https://github.com/nkholski)"
+    "Niklas Berg (https://github.com/nkholski)",
+    "Tudor Gergely (https://github.com/tudorgergely)"
   ],
   "license": "MIT",
   "bugs": {
@@ -35,16 +38,18 @@
   },
   "homepage": "https://github.com/BTMorton/angular2-grid",
   "files": [
-    "src/NgGrid.ts",
-    "dist/NgGrid*"
+    "src/**",
+    "dist/**"
   ],
   "peerDependencies": {
-    "@angular/core": "^2.0.0-rc.0"
+    "@angular/core": "2.0.0-rc.2",
+    "@angular/platform-browser": "2.0.0-rc.2"
   },
   "devDependencies": {
-    "@angular/common": "^2.0.0-rc.0",
-    "@angular/core": "^2.0.0-rc.0",
-    "@angular/platform-browser-dynamic": "^2.0.0-rc.0",
+    "@angular/common": "2.0.0-rc.2",
+    "@angular/core": "2.0.0-rc.2",
+    "@angular/platform-browser-dynamic": "2.0.0-rc.2",
+    "concurrently": "^2.1.0",
     "del": "^1.2.1",
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.35.0",
@@ -54,6 +59,7 @@
     "gulp-symlink": "^2.1.4",
     "gulp-typescript": "^2.9.2",
     "gulp-uglify": "^1.5.1",
+    "http-server": "^0.9.0",
     "jasmine": "^2.3.2",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.10",
@@ -64,10 +70,14 @@
     "phantomjs": "^1.9.19",
     "reflect-metadata": "0.1.2",
     "run-sequence": "^1.1.5",
-    "rxjs": "^5.0.0-beta.6",
+    "rxjs": "5.0.0-beta.6",
     "systemjs": "^0.19.4",
     "typescript": "^1.6.2",
     "zone.js": "^0.6.12"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@angular/compiler": "^2.0.0-rc.2",
+    "@angular/core": "^2.0.0-rc.2",
+    "angular2-uuid": "^1.0.7"
+  }
 }
